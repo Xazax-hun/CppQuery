@@ -22,15 +22,15 @@ MainWindow::MainWindow() {
 	setCentralWidget(resultText);
 	resultText->setReadOnly(true);
 
-    exitAct = new QAction(tr("E&xit"), this);
-    aboutAct = new QAction(tr("About"), this);
-    aboutQtAct = new QAction(tr("About Qt"), this);
+	exitAct = new QAction(tr("E&xit"), this);
+	aboutAct = new QAction(tr("About"), this);
+	aboutQtAct = new QAction(tr("About Qt"), this);
 
-    exitAct->setShortcuts(QKeySequence::Quit);
+	exitAct->setShortcuts(QKeySequence::Quit);
 
-    connect(exitAct, &QAction::triggered, this, &MainWindow::close);
-    connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
-    connect(aboutQtAct, &QAction::triggered, this, &QApplication::aboutQt);
+	connect(exitAct, &QAction::triggered, this, &MainWindow::close);
+	connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
+	connect(aboutQtAct, &QAction::triggered, this, &QApplication::aboutQt);
 
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	helpMenu = menuBar()->addMenu(tr("&Help"));

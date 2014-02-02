@@ -11,7 +11,7 @@ public:
 
 private slots:
 	void about();
-	
+
 private:
 	QListWidget* searchResults;
 
