@@ -79,13 +79,13 @@ STRING(REGEX REPLACE "(\r?\n)+$" "" LLVM_LD_FLAGS "${LLVM_LD_FLAGS}")
 set (CPPQUERY_LD_FLAGS "${LLVM_LD_FLAGS}")
 
 set (CLANGLIBS clangTooling clangFrontend clangSerialization clangDriver clangRewriteCore clangParse clangSema
-           clangEdit clangAnalysis clangAST clangASTMatchers clangLex clangBasic LLVMX86AsmParser LLVMARMAsmParser
-           LLVMMipsAsmParser LLVMX86Desc LLVMSparcDesc LLVMPowerPCDesc LLVMARMDesc LLVMMipsDesc
+           clangEdit clangAnalysis clangAST clangASTMatchers clangLex clangBasic clangDynamicASTMatchers LLVMTransformUtils
+           LLVMARMAsmParser LLVMX86AsmParser LLVMMipsAsmParser LLVMX86Desc LLVMSparcDesc LLVMPowerPCDesc LLVMARMDesc LLVMMipsDesc
            LLVMXCoreDesc LLVMMSP430Desc LLVMNVPTXDesc LLVMHexagonDesc LLVMX86AsmPrinter
            LLVMARMAsmPrinter LLVMMipsAsmPrinter LLVMPowerPCAsmPrinter LLVMMSP430AsmPrinter
            LLVMX86Info LLVMSparcInfo LLVMPowerPCInfo LLVMARMInfo LLVMMipsInfo LLVMXCoreInfo
            LLVMMSP430Info LLVMCppBackendInfo LLVMNVPTXInfo LLVMHexagonInfo LLVMX86Utils
-           LLVMAsmParser LLVMMCParser LLVMMC LLVMSupport)
+           LLVMAsmParser LLVMMCParser LLVMMC LLVMCore LLVMBitWriter LLVMBitReader LLVMOption LLVMSupport)
 
 if (ARCH STREQUAL "32")
   set (CPPQUERY_CXX_FLAGS "${CPPQUERY_CXX_FLAGS} -m32")
@@ -99,15 +99,15 @@ else ()
   set (CPPQUERY_CXX_FLAGS "${CPPQUERY_CXX_FLAGS} -O3 -s")
 endif ()
 
-include_directories("include/" ${GTEST_INCLUDE_DIRS})
+include_directories("include/" ${GTEST_INCLUDE_DIRS} ${CLANG_INCLUDE_DIR} ${LLVM_SRC_ROOT})
 
 add_definitions (${PPDEFINITIONS})
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPQUERY_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
 
 # Main executable 
-add_executable(CppQuery gui/main.cpp gui/mainwindow.cpp)
-target_link_libraries(CppQuery Qt5::Widgets)
+add_executable(CppQuery gui/main.cpp gui/mainwindow.cpp src/session.cpp)
+target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
 # Unit Tests
 add_executable(unittest tests/automata_generator/test.cpp)
