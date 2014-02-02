@@ -8,14 +8,8 @@ find_package(GTest REQUIRED)
 enable_testing()
 
 # Doxygen support
-option(BUILD_DOCUMENTATION "Use Doxygen to create the HTML based API documentation" ON)
-if(BUILD_DOCUMENTATION)
-  FIND_PACKAGE(Doxygen)
-  if (NOT DOXYGEN_FOUND)
-    message(FATAL_ERROR
-      "Doxygen is needed to build the documentation. Please install it correctly")
-  endif()
-
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
   configure_file(Doxyfile.in
                  ${PROJECT_BINARY_DIR}/Doxyfile )
 
@@ -28,6 +22,10 @@ if(BUILD_DOCUMENTATION)
   set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/Doxyfile")
   set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/docs")
 endif()
+
+# Qt libraries
+find_package(Qt5Widgets 5.2 REQUIRED)
+set(CMAKE_AUTOMOC ON)
 
 # Configurations
 
@@ -106,6 +104,10 @@ include_directories("include/" ${GTEST_INCLUDE_DIRS})
 add_definitions (${PPDEFINITIONS})
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPQUERY_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
+
+# Main executable 
+add_executable(CppQuery gui/main.cpp)
+target_link_libraries(CppQuery Qt5::Widgets)
 
 # Unit Tests
 add_executable(unittest tests/automata_generator/test.cpp)

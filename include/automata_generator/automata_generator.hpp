@@ -9,8 +9,8 @@
 #include <boost/mpl/back_inserter.hpp>
 #include <boost/mpl/copy.hpp>
 
-#include "lib/convert_vector.hpp"
-#include "lib/metastring.hpp"
+#include "meta_lib/convert_vector.hpp"
+#include "meta_lib/metastring.hpp"
 
 #include "rule_generator.hpp"
 #include "rule_composer.hpp"
