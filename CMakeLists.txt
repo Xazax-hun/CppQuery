@@ -106,7 +106,7 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPQUERY_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
 
 # Main executable 
-add_executable(CppQuery gui/main.cpp gui/mainwindow.cpp src/session.cpp)
+add_executable(CppQuery gui/main.cpp gui/mainwindow.cpp gui/query_widget.cpp src/session.cpp)
 target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
 # Unit Tests

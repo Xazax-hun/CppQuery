@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "query_widget.h"
 #include "session.h"
 
 MainWindow::MainWindow() {
@@ -14,10 +15,10 @@ MainWindow::MainWindow() {
 	queryTextDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
 	searchResults = new QListWidget(searchResultDock);
-	queryText = new QTextEdit(queryTextDock);
+	queryWidget = new QueryWidget(queryTextDock);
 
 	searchResultDock->setWidget(searchResults);
-	queryTextDock->setWidget(queryText);
+	queryTextDock->setWidget(queryWidget);
 
 	addDockWidget(Qt::LeftDockWidgetArea, searchResultDock);
 	addDockWidget(Qt::BottomDockWidgetArea, queryTextDock);
@@ -29,6 +30,8 @@ MainWindow::MainWindow() {
 	createMenuBar();
 
 	statusBar()->showMessage(tr("Ready"));
+
+	connect(queryWidget, &QueryWidget::executeQuery, this, &MainWindow::executeQuery);
 }
 
 MainWindow::~MainWindow() {
@@ -73,4 +76,10 @@ void MainWindow::open() {
 void MainWindow::about() {
     QMessageBox::about(this, tr("About Menu"),
             tr("A query language based on Clang's ASTMatcher library, to provide the programmers with a more efficient way to navigate in huge codebases than simple text searches."));
+}
+
+void MainWindow::executeQuery(const std::string& query) {
+	if (session) {
+		session->runQuery(query);
+	}
 }

@@ -6,6 +6,7 @@
 #include <QtWidgets>
 
 class Session;
+class QueryWidget;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -13,6 +14,9 @@ class MainWindow : public QMainWindow {
 public:
 	MainWindow();
 	~MainWindow();
+
+public slots:
+	void executeQuery(const std::string& query);
 
 private slots:
 	void about();
@@ -24,7 +28,7 @@ private:
 	QListWidget* searchResults;
 
 	QTextEdit* resultText;
-	QTextEdit* queryText;
+	QueryWidget* queryWidget;
 
 	QMenu* fileMenu;
 	QMenu* helpMenu;

@@ -16,12 +16,15 @@ Session::Session(const std::string& databasePath) {
 
 	assert(error.empty() && "TODO: handle this error");
 
-
 	files = compilationDatabase->getAllFiles();
 	tool = std::auto_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
 
 	int ret = tool->buildASTs(ASTlist);
-	assert(!ret && "TODO: handle this error");	
+	assert(!ret && "TODO: handle this error");
 }
 
 Session::~Session() {}
+
+void Session::runQuery(const std::string& query)
+{
+}

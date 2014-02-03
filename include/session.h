@@ -19,6 +19,8 @@ public:
 	Session(const std::string& databasePath);
 	~Session();
 
+	void runQuery(const std::string& query);
+
 private:
 	std::unique_ptr<clang::tooling::JSONCompilationDatabase> compilationDatabase;
  	std::vector<clang::ASTUnit *> ASTlist;
