@@ -25,6 +25,6 @@ Session::Session(const std::string& databasePath) {
 
 Session::~Session() {}
 
-void Session::runQuery(const std::string& query)
-{
+void Session::runQuery(const std::string& query) {
+	assert(false && "Not yet implemented");
 }

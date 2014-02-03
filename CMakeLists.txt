@@ -67,6 +67,7 @@ execute_process (
   OUTPUT_VARIABLE LLVM_CXX_FLAGS
 )
 STRING(REGEX REPLACE "(\r?\n)+$" "" LLVM_CXX_FLAGS "${LLVM_CXX_FLAGS}")
+STRING(REGEX REPLACE "-DNDEBUG" "" LLVM_CXX_FLAGS "${LLVM_CXX_FLAGS}")
 
 set (CPPQUERY_CXX_FLAGS "${LLVM_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-strict-aliasing -Wno-unused-parameter -Wno-parentheses -Wno-unknown-warning-option -pedantic -std=c++11 -fPIC -Wno-unused-local-typedefs")
 
