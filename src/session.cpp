@@ -12,7 +12,6 @@
 using namespace clang;
 using namespace tooling;
 using namespace ast_matchers;
-using namespace dynamic;
 
 Session::Session(const std::string& databasePath) {
 	std::string error;
@@ -45,26 +44,56 @@ struct CollectBoundNodes : MatchFinder::MatchCallback {
 }
 
 void Session::runQuery(const std::string& query) {
-	Diagnostics diag;
-	llvm::Optional<DynTypedMatcher> matcher = Parser::parseMatcherExpression(query, &diag);
+	dynamic::Diagnostics diag;
+	llvm::Optional<dynamic::DynTypedMatcher> matcher = dynamic::Parser::parseMatcherExpression(query, &diag);
 
 	if (!matcher) {
 		assert(false && "Unimplemented");
 		return;
 	}
 
+	foundMatches.clear();
+	std::string entry;
+
 	for(auto ast : ASTlist) {
+		SourceManager& srcMgr = ast->getSourceManager();
+
 		MatchFinder finder;
-		std::vector<BoundNodes> matches;
-		CollectBoundNodes collector(matches);
+		std::vector<BoundNodes> boundNodes;
+		CollectBoundNodes collector(boundNodes);
 
 		if(!finder.addDynamicMatcher(*matcher, &collector))
 			assert(false && "Unimplemented");
 
 		finder.matchAST(ast->getASTContext());
 
-		for(auto nodes : matches) {
-			// add locations to a vector
+		for(auto nodes : boundNodes) {
+			for(auto idToNode : nodes.getMap()) {
+				SourceRange range = idToNode.second.getSourceRange();
+
+				if (!range.isValid()) continue;
+
+				SourceLocation start = range.getBegin();
+
+				if (srcMgr.isInSystemHeader(start) ||
+					srcMgr.isInExternCSystemHeader(start))
+					continue;
+
+				llvm::StringRef fileName = srcMgr.getFilename(start);
+
+				if (fileName.empty()) continue;
+
+				entry = fileName.str();
+				entry += " (" + idToNode.first + "): ";
+				entry += std::to_string(srcMgr.getSpellingLineNumber(start)) + ",";
+				entry += std::to_string(srcMgr.getSpellingColumnNumber(start));
+
+				foundMatches.insert(entry);
+			}
 		}
 	}
+}
+
+std::set<std::string> Session::getMatches() {
+	return foundMatches;
 }

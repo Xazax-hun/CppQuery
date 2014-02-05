@@ -81,5 +81,13 @@ void MainWindow::about() {
 void MainWindow::executeQuery(const std::string& query) {
 	if (session) {
 		session->runQuery(query);
+
+		searchResults->clear();
+		
+		auto matches = session->getMatches();
+		
+		for( const std::string& entry : matches ) {
+			searchResults->addItem(QString::fromStdString(entry));
+		}
 	}
 }

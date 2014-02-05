@@ -1,9 +1,13 @@
 #ifndef __SESSION_H__
 #define __SESSION_H__
 
+#include <set>
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
+
+#include "clang/Basic/SourceLocation.h"
 
 namespace clang {
 	class ASTUnit;
@@ -21,11 +25,14 @@ public:
 
 	void runQuery(const std::string& query);
 
+	std::set<std::string> getMatches();
+
 private:
 	std::unique_ptr<clang::tooling::JSONCompilationDatabase> compilationDatabase;
  	std::vector<clang::ASTUnit *> ASTlist;
  	std::vector<std::string> files;
  	std::unique_ptr<clang::tooling::ClangTool> tool;
+ 	std::set<std::string> foundMatches;
 };
 
 #endif
