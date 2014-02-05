@@ -7,7 +7,7 @@ class QueryWidget : public QWidget {
 	Q_OBJECT
 
 public:
-	QueryWidget(QWidget* parent = NULL);
+	QueryWidget(QWidget* parent = nullptr);
 
 public slots:
 	void executeButtonPressed();

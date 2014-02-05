@@ -7,6 +7,7 @@
 
 class Session;
 class QueryWidget;
+class CodeViewArea;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -28,7 +29,7 @@ private:
 
 	QListWidget* searchResults;
 
-	QTextEdit* resultText;
+	CodeViewArea* resultText;
 	QueryWidget* queryWidget;
 
 	QMenu* fileMenu;

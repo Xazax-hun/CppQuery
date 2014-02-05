@@ -4,6 +4,7 @@
 #include <QRegularExpression>
 
 #include "query_widget.h"
+#include "codeview_widget.h"
 #include "session.h"
 
 MainWindow::MainWindow() {
@@ -24,9 +25,10 @@ MainWindow::MainWindow() {
 	addDockWidget(Qt::LeftDockWidgetArea, searchResultDock);
 	addDockWidget(Qt::BottomDockWidgetArea, queryTextDock);
 
-	resultText = new QTextEdit(this);
+	resultText = new CodeViewArea(this);
 	setCentralWidget(resultText);
 	resultText->setReadOnly(true);
+	resultText->setLineWrapMode(QPlainTextEdit::NoWrap);
 
 	createMenuBar();
 
@@ -114,6 +116,6 @@ void MainWindow::openResult(QListWidgetItem* item) {
 	resultText->setPlainText(reader.readAll());
 
 	QTextCursor cursor = resultText->textCursor();
-	cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line);
+	cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line - 1);
 	resultText->setTextCursor(cursor);
 }
