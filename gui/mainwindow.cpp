@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <string>
+#include <QRegularExpression>
 
 #include "query_widget.h"
 #include "session.h"
@@ -32,6 +33,7 @@ MainWindow::MainWindow() {
 	statusBar()->showMessage(tr("Ready"));
 
 	connect(queryWidget, &QueryWidget::executeQuery, this, &MainWindow::executeQuery);
+	connect(searchResults, &QListWidget::itemDoubleClicked, this, &MainWindow::openResult);
 }
 
 MainWindow::~MainWindow() {
@@ -90,4 +92,28 @@ void MainWindow::executeQuery(const std::string& query) {
 			searchResults->addItem(QString::fromStdString(entry));
 		}
 	}
+}
+
+void MainWindow::openResult(QListWidgetItem* item) {
+	QString content = item->text();
+	QRegularExpression re{R"((.+) \((.+)\): (\d+),\d+)"};
+	QRegularExpressionMatch match = re.match(content);
+
+	QString fileName = match.captured(1);
+	QString id = match.captured(2);
+	unsigned line = match.captured(3).toUInt();
+
+	QFile file{fileName};
+
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		assert(false && "Unhandled error");
+	}
+
+	QTextStream reader(&file);
+
+	resultText->setPlainText(reader.readAll());
+
+	QTextCursor cursor = resultText->textCursor();
+	cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line);
+	resultText->setTextCursor(cursor);
 }

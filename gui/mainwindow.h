@@ -17,6 +17,7 @@ public:
 
 public slots:
 	void executeQuery(const std::string& query);
+	void openResult(QListWidgetItem* item);
 
 private slots:
 	void about();
