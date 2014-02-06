@@ -2,7 +2,18 @@
 
 #include <algorithm>
 
+#include "cpphighlighter.h"
+
 CodeViewArea::CodeViewArea(QWidget *parent) : QPlainTextEdit(parent) {
+	QFont font;
+	font.setFamily("Courier");
+	font.setFixedPitch(true);
+	font.setPointSize(12);
+
+	setFont(font);
+
+	highlighter = new CppHighlighter(document());
+
 	lineNumberArea = new LineNumberArea(this);
 
 	connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeViewArea::updateLineNumberAreaWidth);
@@ -30,7 +41,7 @@ void CodeViewArea::updateLineNumberAreaWidth(int) {
 	setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
-void CodeViewArea::updateLineNumberArea(const QRect &rect, int dy) {
+void CodeViewArea::updateLineNumberArea(const QRect& rect, int dy) {
 	if (dy)
 		lineNumberArea->scroll(0, dy);
 	else

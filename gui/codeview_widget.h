@@ -5,6 +5,7 @@
 
 // Inspired by QT examples
 
+class CppHighlighter;
 class LineNumberArea;
 
 class CodeViewArea : public QPlainTextEdit
@@ -23,10 +24,11 @@ protected:
 
 private slots:
 	void updateLineNumberAreaWidth(int newBlockCount);
-	void updateLineNumberArea(const QRect &, int);
+	void updateLineNumberArea(const QRect&, int);
 
 private:
-	QWidget *lineNumberArea;
+	QWidget* lineNumberArea;
+	CppHighlighter* highlighter;
 };
 
 
@@ -45,7 +47,7 @@ protected:
 	}
 
 private:
-	CodeViewArea *codeViewArea;
+	CodeViewArea* codeViewArea;
 };
 
 #endif
