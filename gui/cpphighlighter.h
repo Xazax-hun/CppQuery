@@ -14,11 +14,10 @@ public:
 	CppHighlighter(QTextDocument* parent = nullptr);
 
 protected:
-	void highlightBlock(const QString &text);
+	void highlightBlock(const QString& text);
 
 private:
-	struct HighlightRule
-	{
+	struct HighlightRule {
 		QRegularExpression pattern;
 		QTextCharFormat format;
 	};
@@ -33,6 +32,7 @@ private:
 	QTextCharFormat multiLineCommentFormat;
 	QTextCharFormat quotationFormat;
 	QTextCharFormat sigilsFormat;
+	QTextCharFormat directiveFormat;
 };
 
 #endif

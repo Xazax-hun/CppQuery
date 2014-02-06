@@ -76,11 +76,15 @@ CppHighlighter::CppHighlighter(QTextDocument* parent)
 	rule.pattern = QRegularExpression("\".*\"");
 	rule.format = quotationFormat;
 	highlightRules.push_back(rule);
+
+	// Directives
+	directiveFormat.setForeground(Qt::darkGray);
+	rule.pattern = QRegularExpression("#[^\n]*");
+	rule.format = directiveFormat;
+	highlightRules.push_back(rule);
 }
 
-
-
-void CppHighlighter::highlightBlock(const QString &text) {
+void CppHighlighter::highlightBlock(const QString& text) {
 
 	for (const HighlightRule &rule: highlightRules) {
 		const QRegularExpression& expression(rule.pattern);
