@@ -72,6 +72,7 @@ CppHighlighter::CppHighlighter(QTextDocument* parent)
 	commentEndExpression = QRegularExpression("\\*/");
 
 	// String literals
+	// TODO: It is not precise (multi line literals, escaped quotes, literals in the same line)
 	quotationFormat.setForeground(Qt::gray);
 	rule.pattern = QRegularExpression("\".*\"");
 	rule.format = quotationFormat;
@@ -96,9 +97,10 @@ void CppHighlighter::highlightBlock(const QString& text) {
 			m = expression.match(text, index + length);
 		}
 	}
-	setCurrentBlockState(0);
 
 	// Multiline comments
+	setCurrentBlockState(0);
+
 	int startIndex = 0;
 	if (previousBlockState() != 1)
 		startIndex= commentStartExpression.match(text).capturedStart();

@@ -1,5 +1,7 @@
 #include "query_widget.h"
 
+#include "queryhighlighter.h"
+
 QueryWidget::QueryWidget(QWidget* parent) :
 	QWidget(parent)
 {
@@ -12,6 +14,8 @@ QueryWidget::QueryWidget(QWidget* parent) :
 	layout->addWidget(execute);
 
 	setLayout(layout);
+
+	highlighter = new QueryHighlighter(queryText->document());
 
 	connect(execute, &QPushButton::clicked, this, &QueryWidget::executeButtonPressed);
 }

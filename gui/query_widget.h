@@ -3,6 +3,8 @@
 
 #include <QtWidgets>
 
+class QueryHighlighter;
+
 class QueryWidget : public QWidget {
 	Q_OBJECT
 
@@ -18,6 +20,7 @@ signals:
 private:
 	QTextEdit* queryText;
 	QPushButton* execute;
+	QueryHighlighter* highlighter;
 };
 
 #endif
