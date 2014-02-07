@@ -74,12 +74,19 @@ void MainWindow::createMenuBar() {
 }
 
 void MainWindow::open() {
+	// TODO: move parsing to other thread!
+
 	std::string fileName = QFileDialog::getOpenFileName(this,
     	tr("Open Compilation Database"), "", tr("JSON files (*.json)")).toStdString();
 
-	// TODO: progressbar
-
 	session = std::unique_ptr<Session>(new Session(fileName));
+
+	QProgressDialog progress(tr("Parsing files..."), tr("Cancel"), 0, session->getFileCount(), this);
+	progress.setWindowModality(Qt::WindowModal);
+	int i = 0;
+	session->parseFiles([&i, &progress]() -> void {
+		progress.setValue(++i);
+	});
 }
 
 void MainWindow::about() {

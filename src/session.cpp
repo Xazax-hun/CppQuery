@@ -8,6 +8,7 @@
 #include "clang/Tooling/Tooling.h"
 #include "clang/Tooling/JSONCompilationDatabase.h"
 #include "clang/Frontend/ASTUnit.h"
+#include "clang/Frontend/CompilerInstance.h"
 
 using namespace clang;
 using namespace tooling;
@@ -22,12 +23,40 @@ Session::Session(const std::string& databasePath) {
 
 	files = compilationDatabase->getAllFiles();
 	tool = std::auto_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
-
-	int ret = tool->buildASTs(ASTlist);
-	assert(!ret && "TODO: handle this error");
 }
 
 Session::~Session() {}
+
+namespace {
+class ASTBuilderAction : public ToolAction {
+public:
+	ASTBuilderAction(std::vector<ASTUnit*>& ASTlist, const std::function<void(void)>& callback)
+		: ASTlist(ASTlist), callback(callback) {}
+
+	bool runInvocation(CompilerInvocation* invocation, FileManager* files, DiagnosticConsumer* diagConsumer) {
+		ASTUnit *AST = ASTUnit::LoadFromCompilerInvocation(invocation,
+			CompilerInstance::createDiagnostics(&invocation->getDiagnosticOpts(), diagConsumer, false));
+
+		if (!AST) return false;
+
+		ASTlist.push_back(AST);
+		callback();
+
+		return true;
+	}
+
+private:
+	std::vector<ASTUnit*>& ASTlist;
+	const std::function<void(void)>& callback;
+};
+
+}
+
+void Session::parseFiles(const std::function<void(void)>& callback) {
+	ASTBuilderAction action(ASTlist, callback);
+	int ret = tool->run(&action);
+	assert(!ret && "TODO: handle this error");
+}
 
 namespace {
 
