@@ -106,8 +106,10 @@ add_definitions (${PPDEFINITIONS})
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPQUERY_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
 
-# Main executable 
-add_executable(CppQuery gui/main.cpp gui/mainwindow.cpp gui/codeview_widget.cpp gui/cpphighlighter.cpp gui/query_widget.cpp gui/queryhighlighter.cpp src/session.cpp)
+# Main executable
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE GUI_SOURCES ${PROJECT_SOURCE_DIR}/gui/*.cpp)
+add_executable(CppQuery ${GUI_SOURCES} ${SOURCES})
 target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
 # Unit Tests
