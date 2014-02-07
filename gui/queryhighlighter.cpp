@@ -15,7 +15,7 @@ QueryHighlighter::QueryHighlighter(QTextDocument* parent)
 	;
 
 	for (const QString& pattern: keywords) {
-		rule.pattern = QRegularExpression(pattern);
+		rule.pattern = QRegularExpression("\\b" +  pattern + "\\b");
 		rule.format = keywordFormat;
 		highlightRules.push_back(rule);
 	}

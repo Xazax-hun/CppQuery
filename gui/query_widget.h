@@ -4,6 +4,7 @@
 #include <QtWidgets>
 
 class QueryHighlighter;
+class AutoCompleterTextEdit;
 
 class QueryWidget : public QWidget {
 	Q_OBJECT
@@ -18,7 +19,7 @@ signals:
 	void executeQuery(const std::string& query);
 
 private:
-	QTextEdit* queryText;
+	AutoCompleterTextEdit* queryText;
 	QPushButton* execute;
 	QueryHighlighter* highlighter;
 };
