@@ -72,9 +72,8 @@ CppHighlighter::CppHighlighter(QTextDocument* parent)
 	commentEndExpression = QRegularExpression("\\*/");
 
 	// String literals
-	// TODO: It is not precise (multi line literals, escaped quotes, literals in the same line)
 	quotationFormat.setForeground(Qt::gray);
-	rule.pattern = QRegularExpression("\".*\"");
+	rule.pattern = QRegularExpression("\"(\\.|[^\"])*\"");
 	rule.format = quotationFormat;
 	highlightRules.push_back(rule);
 

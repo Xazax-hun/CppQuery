@@ -35,7 +35,7 @@ QueryHighlighter::QueryHighlighter(QTextDocument* parent)
 
 	// String literals
 	quotationFormat.setForeground(Qt::darkGreen);
-	rule.pattern = QRegularExpression("\"[^\"]*\"");
+	rule.pattern = QRegularExpression("\"(\\.|[^\"])*\"");
 	rule.format = quotationFormat;
 	highlightRules.push_back(rule);
 
