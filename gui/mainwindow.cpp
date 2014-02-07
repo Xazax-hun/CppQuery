@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 
 #include <string>
+
 #include <QRegularExpression>
+#include <QDesktopServices>
 
 #include "query_widget.h"
 #include "codeview_widget.h"
@@ -43,11 +45,12 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::createMenuBar() {
+	openAct = new QAction(tr("&Open..."), this);
 	exitAct = new QAction(tr("E&xit"), this);
+	matcherHelpAct = new QAction(tr("Matcher reference"), this);
 	aboutAct = new QAction(tr("About"), this);
 	aboutQtAct = new QAction(tr("About Qt"), this);
 
-	openAct = new QAction(tr("&Open..."), this);
 	openAct->setShortcuts(QKeySequence::Open);
 	openAct->setStatusTip(tr("Open a JSON compilation database."));
 
@@ -55,6 +58,7 @@ void MainWindow::createMenuBar() {
 
 	connect(openAct, &QAction::triggered, this, &MainWindow::open);
 	connect(exitAct, &QAction::triggered, this, &MainWindow::close);
+	connect(matcherHelpAct, &QAction::triggered, this, &MainWindow::openMatcherReference);
 	connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
 	connect(aboutQtAct, &QAction::triggered, this, &QApplication::aboutQt);
 
@@ -63,6 +67,8 @@ void MainWindow::createMenuBar() {
 
 	fileMenu->addAction(openAct);
 	fileMenu->addAction(exitAct);
+
+	helpMenu->addAction(matcherHelpAct);
 	helpMenu->addAction(aboutAct);
 	helpMenu->addAction(aboutQtAct);
 }
@@ -80,6 +86,10 @@ void MainWindow::open() {
 void MainWindow::about() {
     QMessageBox::about(this, tr("About Menu"),
             tr("A query language based on Clang's ASTMatcher library, to provide the programmers with a more efficient way to navigate in huge codebases than simple text searches."));
+}
+
+void MainWindow::openMatcherReference() {
+	QDesktopServices::openUrl(QUrl("http://clang.llvm.org/docs/LibASTMatchersReference.html"));
 }
 
 void MainWindow::executeQuery(const std::string& query) {

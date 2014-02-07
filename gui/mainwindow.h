@@ -25,6 +25,7 @@ private slots:
 
 private:
 	void createMenuBar();
+	void openMatcherReference();
 	void open();
 
 	QListWidget* searchResults;
@@ -35,10 +36,12 @@ private:
 	QMenu* fileMenu;
 	QMenu* helpMenu;
 
-	QAction *openAct;
-	QAction *exitAct;
-	QAction *aboutAct;
-	QAction *aboutQtAct;
+	QAction* openAct;
+	QAction* exitAct;
+
+	QAction* matcherHelpAct;
+	QAction* aboutAct;
+	QAction* aboutQtAct;
 
 	std::unique_ptr<Session> session;
 };
