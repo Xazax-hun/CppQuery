@@ -25,7 +25,12 @@ Session::Session(const std::string& databasePath) {
 	tool = std::auto_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
 }
 
-Session::~Session() {}
+Session::~Session() {
+	for(auto AST : ASTlist) {
+		AST->setUnsafeToFree(false);
+		delete AST;
+	}
+}
 
 namespace {
 class ASTBuilderAction : public ToolAction {
