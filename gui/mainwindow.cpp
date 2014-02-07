@@ -84,6 +84,8 @@ void MainWindow::about() {
 
 void MainWindow::executeQuery(const std::string& query) {
 	if (session) {
+		statusBar()->showMessage(tr("Querying..."));
+
 		session->runQuery(query);
 
 		searchResults->clear();
@@ -93,6 +95,8 @@ void MainWindow::executeQuery(const std::string& query) {
 		for( const std::string& entry : matches ) {
 			searchResults->addItem(QString::fromStdString(entry));
 		}
+
+		statusBar()->showMessage(tr("Ready"));
 	}
 }
 
