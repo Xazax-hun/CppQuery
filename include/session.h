@@ -33,11 +33,11 @@ public:
 	~Session();
 
 	unsigned getFileCount() { return files.size(); }
-	void parseFiles(const std::function<void(void)>& callback);
+	void parseFiles(const std::function<bool(const std::string&)>& onTUend);
 
 	void runQuery(const std::string& query);
 
-	std::set<Match>& getMatches();
+	const std::set<Match>& getMatches() const;
 
 private:
 	std::unique_ptr<clang::tooling::JSONCompilationDatabase> compilationDatabase;

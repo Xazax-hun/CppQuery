@@ -81,11 +81,16 @@ void MainWindow::open() {
 
 	session = std::unique_ptr<Session>(new Session(fileName));
 
+	qApp->processEvents();
+
 	QProgressDialog progress(tr("Parsing files..."), tr("Cancel"), 0, session->getFileCount(), this);
 	progress.setWindowModality(Qt::WindowModal);
 	int i = 0;
-	session->parseFiles([&i, &progress]() -> void {
+
+	session->parseFiles([&i, &progress](const std::string& TUName) -> bool {
 		progress.setValue(++i);
+		qApp->processEvents();
+		return true;
 	});
 }
 

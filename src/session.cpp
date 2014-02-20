@@ -42,8 +42,8 @@ Session::~Session() {
 namespace {
 class ASTBuilderAction : public ToolAction {
 public:
-	ASTBuilderAction(std::vector<ASTUnit*>& ASTlist, const std::function<void(void)>& callback)
-		: ASTlist(ASTlist), callback(callback) {}
+	ASTBuilderAction(std::vector<ASTUnit*>& ASTlist, const std::function<bool(const std::string&)>& onTUend)
+		: ASTlist(ASTlist), onTUend(onTUend) {}
 
 	bool runInvocation(CompilerInvocation* invocation, FileManager* files, DiagnosticConsumer* diagConsumer) {
 		ASTUnit *AST = ASTUnit::LoadFromCompilerInvocation(invocation,
@@ -51,21 +51,21 @@ public:
 
 		if (!AST) return false;
 
-		ASTlist.push_back(AST);
-		callback();
+		if(onTUend(AST->getMainFileName().str()))
+			ASTlist.push_back(AST);
 
 		return true;
 	}
 
 private:
 	std::vector<ASTUnit*>& ASTlist;
-	const std::function<void(void)>& callback;
+	const std::function<bool(const std::string&)>& onTUend;
 };
 
 }
 
-void Session::parseFiles(const std::function<void(void)>& callback) {
-	ASTBuilderAction action(ASTlist, callback);
+void Session::parseFiles(const std::function<bool(const std::string&)>& onTUend) {
+	ASTBuilderAction action(ASTlist, onTUend);
 	int ret = tool->run(&action);
 	assert(!ret && "TODO: handle this error");
 }
@@ -140,6 +140,6 @@ void Session::runQuery(const std::string& query) {
 	}
 }
 
-std::set<Match>& Session::getMatches() {
+const std::set<Match>& Session::getMatches() const {
 	return foundMatches;
 }
