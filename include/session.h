@@ -19,6 +19,14 @@ namespace clang {
 	}
 }
 
+struct Match {
+	std::string fileName, id;
+	unsigned startLine, startCol;
+	unsigned endLine, endCol;
+};
+
+bool operator<(const Match&, const Match&);
+
 class Session {
 public:
 	Session(const std::string& databasePath);
@@ -29,14 +37,14 @@ public:
 
 	void runQuery(const std::string& query);
 
-	std::set<std::string> getMatches();
+	std::set<Match>& getMatches();
 
 private:
 	std::unique_ptr<clang::tooling::JSONCompilationDatabase> compilationDatabase;
  	std::vector<clang::ASTUnit*> ASTlist;
  	std::vector<std::string> files;
  	std::unique_ptr<clang::tooling::ClangTool> tool;
- 	std::set<std::string> foundMatches;
+ 	std::set<Match> foundMatches;
 };
 
 #endif

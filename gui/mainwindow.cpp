@@ -108,8 +108,13 @@ void MainWindow::executeQuery(const std::string& query) {
 		
 		auto matches = session->getMatches();
 		
-		for( const std::string& entry : matches ) {
-			searchResults->addItem(QString::fromStdString(entry));
+		std::string tmp;
+		for( const Match& m : matches ) {
+			tmp = m.fileName;
+			tmp += " (" + m.id + "): ";
+			tmp += std::to_string(m.startLine) + ",";
+			tmp += std::to_string(m.startCol);
+			searchResults->addItem(QString::fromStdString(tmp));
 		}
 
 		statusBar()->showMessage(tr("Ready"));

@@ -1,5 +1,6 @@
 #include "session.h"
 
+#include <tuple>
 #include <cassert>
 
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -9,10 +10,16 @@
 #include "clang/Tooling/JSONCompilationDatabase.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Lex/Lexer.h"
 
 using namespace clang;
 using namespace tooling;
 using namespace ast_matchers;
+
+bool operator<(const Match& lhs, const Match& rhs) {
+	return std::tie(lhs.fileName, lhs.id, lhs.startLine, lhs.startCol, lhs.endLine, lhs.endCol) <
+		std::tie(rhs.fileName, rhs.id, rhs.startLine, rhs.startCol, rhs.endLine, rhs.endCol);
+}
 
 Session::Session(const std::string& databasePath) {
 	std::string error;
@@ -66,11 +73,11 @@ void Session::parseFiles(const std::function<void(void)>& callback) {
 namespace {
 
 struct CollectBoundNodes : MatchFinder::MatchCallback {
-	std::vector<BoundNodes> &bindings;
+	std::vector<BoundNodes>& bindings;
 
-	CollectBoundNodes(std::vector<BoundNodes> &bindings) : bindings(bindings) {}
+	CollectBoundNodes(std::vector<BoundNodes>& bindings) : bindings(bindings) {}
 
-	void run(const MatchFinder::MatchResult &result) {
+	void run(const MatchFinder::MatchResult& result) {
 		bindings.push_back(result.Nodes);
 	}
 };
@@ -87,7 +94,7 @@ void Session::runQuery(const std::string& query) {
 	}
 
 	foundMatches.clear();
-	std::string entry;
+	Match m;
 
 	for(auto ast : ASTlist) {
 		SourceManager& srcMgr = ast->getSourceManager();
@@ -113,21 +120,26 @@ void Session::runQuery(const std::string& query) {
 					srcMgr.isInExternCSystemHeader(start))
 					continue;
 
+				// Get the last character of the last token
+				SourceLocation end = Lexer::getLocForEndOfToken(range.getEnd(), 1, srcMgr, LangOptions());
+
 				llvm::StringRef fileName = srcMgr.getFilename(start);
 
 				if (fileName.empty()) continue;
 
-				entry = fileName.str();
-				entry += " (" + idToNode.first + "): ";
-				entry += std::to_string(srcMgr.getSpellingLineNumber(start)) + ",";
-				entry += std::to_string(srcMgr.getSpellingColumnNumber(start));
+				m.fileName = fileName.str();
+				m.id = idToNode.first;
+				m.startCol = srcMgr.getSpellingColumnNumber(start);
+				m.startLine = srcMgr.getSpellingLineNumber(start);
+				m.endCol = srcMgr.getSpellingColumnNumber(end);
+				m.endLine = srcMgr.getSpellingLineNumber(end);
 
-				foundMatches.insert(entry);
+				foundMatches.insert(std::move(m));
 			}
 		}
 	}
 }
 
-std::set<std::string> Session::getMatches() {
+std::set<Match>& Session::getMatches() {
 	return foundMatches;
 }
