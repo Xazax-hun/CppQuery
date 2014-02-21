@@ -17,7 +17,7 @@ public:
 
 	void lineNumberAreaPaintEvent(QPaintEvent* event);
 	int lineNumberAreaWidth();
-	void highlightCurrentLine();
+	void highlightArea(int startLine, int startCol, int endLine, int endCol);
 
 protected:
 	void resizeEvent(QResizeEvent* event);

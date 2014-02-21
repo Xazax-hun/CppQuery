@@ -155,9 +155,12 @@ void MainWindow::openResult(const QModelIndex& index) {
 
 	QAbstractItemModel* model = searchResults->model();
 
-	QString fileName = model->data(model->index(row, 1)).toString();
 	QString id = model->data(model->index(row, 0)).toString();
-	int line = model->data(model->index(row, 2)).toInt();
+	QString fileName = model->data(model->index(row, 1)).toString();
+	int startLine = model->data(model->index(row, 2)).toInt();
+	int startCol = model->data(model->index(row, 3)).toInt();
+	int endLine = model->data(model->index(row, 4)).toInt();
+	int endCol = model->data(model->index(row, 5)).toInt();
 
 	QFile file{fileName};
 
@@ -169,7 +172,5 @@ void MainWindow::openResult(const QModelIndex& index) {
 
 	resultText->setPlainText(reader.readAll());
 
-	QTextCursor cursor = resultText->textCursor();
-	cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, line - 1);
-	resultText->setTextCursor(cursor);
+	resultText->highlightArea(startLine, startCol, endLine, endCol);
 }

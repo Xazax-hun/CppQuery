@@ -1,6 +1,7 @@
 #include "codeview_widget.h"
 
 #include <algorithm>
+#include <QDebug>
 
 #include "cpphighlighter.h"
 
@@ -18,7 +19,6 @@ CodeViewArea::CodeViewArea(QWidget *parent) : QPlainTextEdit(parent) {
 
 	connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeViewArea::updateLineNumberAreaWidth);
 	connect(this, &QPlainTextEdit::updateRequest, this, &CodeViewArea::updateLineNumberArea);
-	connect(this, &QPlainTextEdit::cursorPositionChanged, this, &CodeViewArea::highlightCurrentLine);
 
 	updateLineNumberAreaWidth(0);
 }
@@ -83,19 +83,27 @@ void CodeViewArea::lineNumberAreaPaintEvent(QPaintEvent *event) {
 	}
 }
 
-void CodeViewArea::highlightCurrentLine() {
+void CodeViewArea::highlightArea(int startLine, int startCol, int endLine, int endCol) {
 	QList<QTextEdit::ExtraSelection> extraSelections;
-
 	QTextEdit::ExtraSelection selection;
+	
+	QColor selectionColor = QColor(Qt::yellow).lighter(160);
+	selection.format.setBackground(selectionColor);
 
-	QColor lineColor = QColor(Qt::yellow).lighter(160);
+	QTextCursor cursor = textCursor();
+	cursor.clearSelection();
+	cursor.movePosition(QTextCursor::Start, QTextCursor::MoveAnchor);
+	cursor.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, startLine - 1);
+	cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor, startCol - 1);
 
-	selection.format.setBackground(lineColor);
-	selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-	selection.cursor = textCursor();
-	selection.cursor.clearSelection();
+	setTextCursor(cursor);
+
+	// selection
+	cursor.movePosition(QTextCursor::Down, QTextCursor::KeepAnchor, endLine - startLine);
+	cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, endCol);
+
+	selection.cursor = cursor;
 	extraSelections.append(selection);
-
 	setExtraSelections(extraSelections);
 }
 
