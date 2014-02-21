@@ -18,7 +18,7 @@ public:
 
 public slots:
 	void executeQuery(const std::string& query);
-	void openResult(QListWidgetItem* item);
+	void openResult(const QModelIndex& index);
 
 private slots:
 	void about();
@@ -28,7 +28,7 @@ private:
 	void openMatcherReference();
 	void open();
 
-	QListWidget* searchResults;
+	QTableView* searchResults;
 
 	CodeViewArea* resultText;
 	QueryWidget* queryWidget;

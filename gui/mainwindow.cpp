@@ -18,8 +18,24 @@ MainWindow::MainWindow() {
 	searchResultDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	queryTextDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
-	searchResults = new QListWidget(searchResultDock);
+	searchResults = new QTableView(searchResultDock);
 	queryWidget = new QueryWidget(queryTextDock);
+
+	searchResults->setSelectionMode(QAbstractItemView::NoSelection);
+	QStandardItemModel* model = new QStandardItemModel(0, 6, searchResults);
+	QStringList headers;
+	headers << tr("id") << tr("Filename") << tr("Start Line") << tr("Start Col") << tr("End Line") << tr("End Col");
+	model->setHorizontalHeaderLabels(headers);
+
+	searchResults->setModel(model);
+	searchResults->setGridStyle(Qt::NoPen);
+	searchResults->setAlternatingRowColors(true);
+	searchResults->verticalHeader()->hide();
+	searchResults->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	searchResults->setSelectionMode(QAbstractItemView::NoSelection);
+	searchResults->setDragEnabled(false);
+	searchResults->setTextElideMode(Qt::ElideLeft);
+	searchResults->resizeColumnsToContents();
 
 	searchResultDock->setWidget(searchResults);
 	queryTextDock->setWidget(queryWidget);
@@ -37,11 +53,11 @@ MainWindow::MainWindow() {
 	statusBar()->showMessage(tr("Ready"));
 
 	connect(queryWidget, &QueryWidget::executeQuery, this, &MainWindow::executeQuery);
-	connect(searchResults, &QListWidget::itemDoubleClicked, this, &MainWindow::openResult);
+	connect(searchResults, &QTableView::doubleClicked, this, &MainWindow::openResult);
 }
 
 MainWindow::~MainWindow() {
-
+	delete searchResults->model();
 }
 
 void MainWindow::createMenuBar() {
@@ -109,31 +125,39 @@ void MainWindow::executeQuery(const std::string& query) {
 
 		session->runQuery(query);
 
-		searchResults->clear();
+		QAbstractItemModel* model = searchResults->model();
+		model->removeRows(0, model->rowCount());
 		
 		auto matches = session->getMatches();
+
+		unsigned max = matches.size();
+		model->insertRows(0, max);
 		
-		std::string tmp;
-		for( const Match& m : matches ) {
-			tmp = m.fileName;
-			tmp += " (" + m.id + "): ";
-			tmp += std::to_string(m.startLine) + ",";
-			tmp += std::to_string(m.startCol);
-			searchResults->addItem(QString::fromStdString(tmp));
+		unsigned i = 0;
+		for(const Match& m : matches) {
+			model->setData(model->index(i, 0), QVariant(QString::fromStdString(m.id)), Qt::DisplayRole);
+			model->setData(model->index(i, 1), QVariant(QString::fromStdString(m.fileName)), Qt::DisplayRole);
+			model->setData(model->index(i, 2), QVariant(m.startLine), Qt::DisplayRole);
+			model->setData(model->index(i, 3), QVariant(m.startCol), Qt::DisplayRole);
+			model->setData(model->index(i, 4), QVariant(m.endLine), Qt::DisplayRole);
+			model->setData(model->index(i, 5), QVariant(m.endCol), Qt::DisplayRole);
+			++i;
 		}
+
+		searchResults->setModel(model);
 
 		statusBar()->showMessage(tr("Ready"));
 	}
 }
 
-void MainWindow::openResult(QListWidgetItem* item) {
-	QString content = item->text();
-	QRegularExpression re{R"((.+) \((.+)\): (\d+),\d+)"};
-	QRegularExpressionMatch match = re.match(content);
+void MainWindow::openResult(const QModelIndex& index) {
+	int row = index.row();
 
-	QString fileName = match.captured(1);
-	QString id = match.captured(2);
-	unsigned line = match.captured(3).toUInt();
+	QAbstractItemModel* model = searchResults->model();
+
+	QString fileName = model->data(model->index(row, 1)).toString();
+	QString id = model->data(model->index(row, 0)).toString();
+	int line = model->data(model->index(row, 2)).toInt();
 
 	QFile file{fileName};
 
