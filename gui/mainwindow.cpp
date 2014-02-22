@@ -36,6 +36,7 @@ MainWindow::MainWindow() {
 	searchResults->setDragEnabled(false);
 	searchResults->setTextElideMode(Qt::ElideLeft);
 	searchResults->resizeColumnsToContents();
+	searchResults->horizontalHeader()->setStretchLastSection(true);
 
 	searchResultDock->setWidget(searchResults);
 	queryTextDock->setWidget(queryWidget);
