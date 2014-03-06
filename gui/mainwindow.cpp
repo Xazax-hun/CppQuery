@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include <QRegularExpression>
 #include <QDesktopServices>
 
 #include "query_widget.h"
@@ -53,12 +52,28 @@ MainWindow::MainWindow() {
 
 	statusBar()->showMessage(tr("Ready"));
 
+	parser = new ParserWorker(this);
+	parseProgress = new QProgressDialog(tr("Parsing files..."), tr("Cancel"), 0, 0, this);
+	parseProgress->setWindowModality(Qt::WindowModal);
+	parseProgress->hide();
+
 	connect(queryWidget, &QueryWidget::executeQuery, this, &MainWindow::executeQuery);
 	connect(searchResults, &QTableView::doubleClicked, this, &MainWindow::openResult);
+
+	// Connect the options to the worker thread;
+	connect(parser, &ParserWorker::filesDone,[this](int i) {
+		this->parseProgress->setValue(i);
+	});
+
+	connect(parser, &ParserWorker::parseDone,[this](std::unique_ptr<Session>* session) {
+		this->parseProgress->hide();
+		this->session = std::move(*session);
+	});
 }
 
 MainWindow::~MainWindow() {
 	delete searchResults->model();
+	delete parser;
 }
 
 void MainWindow::createMenuBar() {
@@ -98,17 +113,12 @@ void MainWindow::open() {
 
 	session = std::unique_ptr<Session>(new Session(fileName));
 
-	qApp->processEvents();
+	parseProgress->show();
+	parseProgress->setMaximum(session->getFileCount());
+	parseProgress->setValue(0);
 
-	QProgressDialog progress(tr("Parsing files..."), tr("Cancel"), 0, session->getFileCount(), this);
-	progress.setWindowModality(Qt::WindowModal);
-	int i = 0;
-
-	session->parseFiles([&i, &progress](const std::string& TUName) -> bool {
-		progress.setValue(++i);
-		qApp->processEvents();
-		return true;
-	});
+	parser->setSession(std::move(session));
+	parser->start();
 }
 
 void MainWindow::about() {
@@ -174,4 +184,25 @@ void MainWindow::openResult(const QModelIndex& index) {
 	resultText->setPlainText(reader.readAll());
 
 	resultText->highlightArea(startLine, startCol, endLine, endCol);
+}
+
+ParserWorker::ParserWorker(QWidget* parent) :
+	QThread(parent), session(nullptr) {}
+
+ParserWorker::~ParserWorker() {}
+
+void ParserWorker::setSession(std::unique_ptr<Session> session) {
+	this->session = std::move(session);
+}
+
+void ParserWorker::run() {
+	if (!session) return;
+
+	int i = 0;
+	session->parseFiles([&i, this](const std::string& TUName) -> bool {
+		this->emitFilesDone(++i);
+		return true;
+	});
+
+	emit parseDone(&session);
 }

@@ -2,12 +2,36 @@
 #define __MAINWINDOW_H__
 
 #include <memory>
+#include <utility>
 
 #include <QtWidgets>
+#include <QThread>
 
 class Session;
 class QueryWidget;
 class CodeViewArea;
+
+class ParserWorker : public QThread {
+	Q_OBJECT
+
+signals:
+	void filesDone(int);
+	void parseDone(std::unique_ptr<Session>*);
+
+public:
+	ParserWorker(QWidget* parent);
+	~ParserWorker();
+
+	void setSession(std::unique_ptr<Session> session);
+	
+protected:
+	void run() override;
+
+private:
+	void emitFilesDone(int i) { emit filesDone(i); }
+
+	std::unique_ptr<Session> session;
+};
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -42,6 +66,9 @@ private:
 	QAction* matcherHelpAct;
 	QAction* aboutAct;
 	QAction* aboutQtAct;
+
+	ParserWorker* parser;
+	QProgressDialog* parseProgress;
 
 	std::unique_ptr<Session> session;
 };
