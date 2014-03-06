@@ -62,12 +62,18 @@ MainWindow::MainWindow() {
 
 	// Connect the options to the worker thread;
 	connect(parser, &ParserWorker::filesDone,[this](int i) {
-		this->parseProgress->setValue(i);
+		parseProgress->setValue(i);
 	});
 
 	connect(parser, &ParserWorker::parseDone,[this](std::unique_ptr<Session>* session) {
-		this->parseProgress->hide();
+		parseProgress->hide();
 		this->session = std::move(*session);
+	});
+
+	// Cancel button terminates the parser thread
+	connect(parseProgress, &QProgressDialog::canceled, [this](){
+		parser->terminate();
+		session.reset(nullptr);
 	});
 }
 
@@ -110,6 +116,8 @@ void MainWindow::open() {
 
 	std::string fileName = QFileDialog::getOpenFileName(this,
     	tr("Open Compilation Database"), "", tr("JSON files (*.json)")).toStdString();
+
+	if (fileName.empty()) return;
 
 	session = std::unique_ptr<Session>(new Session(fileName));
 
