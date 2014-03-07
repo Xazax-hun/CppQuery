@@ -127,6 +127,12 @@ void MainWindow::open() {
 
 		parser->setSession(session.get());
 		parser->start();
+
+
+		// Remove the results of the session that was open earlier
+		QAbstractItemModel* model = searchResults->model();
+		model->removeRows(0, model->rowCount());
+		searchResults->setModel(model);
 	}
 	catch (DatabaseError& e) {
 		QMessageBox::critical(this, tr("Error"), tr("Unable to open compilation database: ") + QString::fromStdString(e.getReason()));
