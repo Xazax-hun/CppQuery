@@ -1,4 +1,5 @@
 List of tasks to accomplish:
+	* Add doxygen documentation.
 	* Use namespaces.
 	* Format the whole project with clang format.
 	* Persistent catalogue of Queries with descriptions.

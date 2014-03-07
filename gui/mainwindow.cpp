@@ -111,8 +111,6 @@ void MainWindow::createMenuBar() {
 }
 
 void MainWindow::open() {
-	// TODO: move parsing to other thread!
-
 	std::string fileName = QFileDialog::getOpenFileName(this,
     	tr("Open Compilation Database"), "", tr("JSON files (*.json)")).toStdString();
 
