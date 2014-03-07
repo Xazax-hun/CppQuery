@@ -68,7 +68,7 @@ private:
 void Session::parseFiles(const std::function<bool(const std::string&)>& onTUend) {
 	ASTBuilderAction action(ASTlist, onTUend);
 	int ret = tool->run(&action);
-	assert(!ret && "TODO: handle this error");
+	assert(!ret && "TODO: handle this error"); // Occurs when a file can not be parsed e.g. compilation error.
 }
 
 namespace {
@@ -105,7 +105,7 @@ void Session::runQuery(const std::string& query) {
 		CollectBoundNodes collector(boundNodes);
 
 		if(!finder.addDynamicMatcher(*matcher, &collector))
-			assert(false && "Unimplemented");
+			assert(false && "Unimplemented"); // Fails if the top matcher is not valid
 
 		finder.matchAST(ast->getASTContext());
 
