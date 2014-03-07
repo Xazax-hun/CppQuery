@@ -118,14 +118,19 @@ void MainWindow::open() {
 
 	if (fileName.empty()) return;
 
-	session.reset(new Session(fileName));
+	try {
+		session.reset(new Session(fileName));
 
-	parseProgress->show();
-	parseProgress->setMaximum(session->getFileCount());
-	parseProgress->setValue(0);
+		parseProgress->show();
+		parseProgress->setMaximum(session->getFileCount());
+		parseProgress->setValue(0);
 
-	parser->setSession(session.get());
-	parser->start();
+		parser->setSession(session.get());
+		parser->start();
+	}
+	catch (DatabaseError& e) {
+		QMessageBox::critical(this, tr("Error"), tr("Unable to open compilation database: ") + QString::fromStdString(e.getReason()));
+	}
 }
 
 void MainWindow::about() {

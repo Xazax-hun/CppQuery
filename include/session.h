@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <functional>
+#include <exception>
 
 #include "clang/Basic/SourceLocation.h"
 
@@ -18,6 +19,16 @@ namespace clang {
 		class ClangTool;
 	}
 }
+
+class DatabaseError : std::exception {
+public:
+	DatabaseError(const std::string& error) : reason(error) {}
+	const std::string& getReason() const { return reason; }
+	const char* what() const noexcept override { return "Unable to load compilation database."; }
+
+private:
+	std::string reason;
+};
 
 struct Match {
 	std::string fileName, id;

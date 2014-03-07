@@ -26,7 +26,8 @@ Session::Session(const std::string& databasePath) {
 	compilationDatabase = std::unique_ptr<JSONCompilationDatabase>(
 		JSONCompilationDatabase::loadFromFile(databasePath, error));
 
-	assert(error.empty() && "TODO: handle this error");
+	if (!error.empty())
+		throw DatabaseError(error);
 
 	files = compilationDatabase->getAllFiles();
 	tool = std::auto_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
