@@ -4,7 +4,6 @@ List of tasks to accomplish:
 	* Use namespaces.
 	* Format the whole project with clang format.
 	* Persistent catalogue of Queries with descriptions.
-	* Handling query errors.
 	* Multithread parsing.
 	* Context dependent autocompletition in Query language.
 	* Do not execute queries with semantic errors, underline the wrong parts.

@@ -150,7 +150,13 @@ void MainWindow::executeQuery(const std::string& query) {
 	if (session) {
 		statusBar()->showMessage(tr("Querying..."));
 
-		session->runQuery(query);
+		try {
+			session->runQuery(query);
+		} catch (QueryError& e) {
+			QMessageBox::critical(this, tr("Error"), tr("Unable to parse the query: ") + QString::fromStdString(e.getReason()));
+			statusBar()->showMessage(tr("Query failed."), 3);
+			return;
+		}
 
 		QAbstractItemModel* model = searchResults->model();
 		model->removeRows(0, model->rowCount());

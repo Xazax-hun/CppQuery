@@ -89,10 +89,8 @@ void Session::runQuery(const std::string& query) {
 	dynamic::Diagnostics diag;
 	llvm::Optional<dynamic::DynTypedMatcher> matcher = dynamic::Parser::parseMatcherExpression(query, &diag);
 
-	if (!matcher) {
-		assert(false && "Unimplemented");
-		return;
-	}
+	if (!matcher)
+		throw QueryError(diag.toString());
 
 	foundMatches.clear();
 	Match m;
