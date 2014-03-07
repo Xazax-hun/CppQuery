@@ -30,7 +30,7 @@ Session::Session(const std::string& databasePath) {
 		throw DatabaseError(error);
 
 	files = compilationDatabase->getAllFiles();
-	tool = std::auto_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
+	tool = std::unique_ptr<clang::tooling::ClangTool>(new ClangTool(*compilationDatabase, files));
 }
 
 Session::~Session() {
