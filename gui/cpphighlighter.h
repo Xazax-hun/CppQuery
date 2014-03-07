@@ -8,31 +8,31 @@
 #include <QTextCharFormat>
 
 class CppHighlighter : public QSyntaxHighlighter {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	CppHighlighter(QTextDocument* parent = nullptr);
+  CppHighlighter(QTextDocument *parent = nullptr);
 
 protected:
-	void highlightBlock(const QString& text);
+  void highlightBlock(const QString &text);
 
 private:
-	struct HighlightRule {
-		QRegularExpression pattern;
-		QTextCharFormat format;
-	};
+  struct HighlightRule {
+    QRegularExpression pattern;
+    QTextCharFormat format;
+  };
 
-	std::vector<HighlightRule> highlightRules;
+  std::vector<HighlightRule> highlightRules;
 
-	QRegularExpression commentStartExpression;
-	QRegularExpression commentEndExpression;
+  QRegularExpression commentStartExpression;
+  QRegularExpression commentEndExpression;
 
-	QTextCharFormat keywordFormat;
-	QTextCharFormat singleLineCommentFormat;
-	QTextCharFormat multiLineCommentFormat;
-	QTextCharFormat quotationFormat;
-	QTextCharFormat sigilsFormat;
-	QTextCharFormat directiveFormat;
+  QTextCharFormat keywordFormat;
+  QTextCharFormat singleLineCommentFormat;
+  QTextCharFormat multiLineCommentFormat;
+  QTextCharFormat quotationFormat;
+  QTextCharFormat sigilsFormat;
+  QTextCharFormat directiveFormat;
 };
 
 #endif

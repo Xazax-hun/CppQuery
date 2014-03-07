@@ -2,15 +2,15 @@
 
 #include "mainwindow.h"
 
-int main(int argc, char* argv[]) {
-	QApplication app(argc, argv);
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
 
-	QCoreApplication::setOrganizationName("Open Source");
-	QCoreApplication::setOrganizationDomain("github.com/Xazax-hun/CppQuery");
-	QCoreApplication::setApplicationName("CppQuery");
+  QCoreApplication::setOrganizationName("Open Source");
+  QCoreApplication::setOrganizationDomain("github.com/Xazax-hun/CppQuery");
+  QCoreApplication::setApplicationName("CppQuery");
 
-	MainWindow w;
-	w.show();
+  MainWindow w;
+  w.show();
 
-	return app.exec();
+  return app.exec();
 }

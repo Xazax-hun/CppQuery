@@ -8,46 +8,45 @@
 class CppHighlighter;
 class LineNumberArea;
 
-class CodeViewArea : public QPlainTextEdit
-{
-	Q_OBJECT
+class CodeViewArea : public QPlainTextEdit {
+  Q_OBJECT
 
 public:
-	CodeViewArea(QWidget* parent = nullptr);
+  CodeViewArea(QWidget *parent = nullptr);
 
-	void lineNumberAreaPaintEvent(QPaintEvent* event);
-	int lineNumberAreaWidth();
-	void highlightArea(int startLine, int startCol, int endLine, int endCol);
+  void lineNumberAreaPaintEvent(QPaintEvent *event);
+  int lineNumberAreaWidth();
+  void highlightArea(int startLine, int startCol, int endLine, int endCol);
 
 protected:
-	void resizeEvent(QResizeEvent* event);
+  void resizeEvent(QResizeEvent *event);
 
-private slots:
-	void updateLineNumberAreaWidth(int newBlockCount);
-	void updateLineNumberArea(const QRect&, int);
+private
+slots:
+  void updateLineNumberAreaWidth(int newBlockCount);
+  void updateLineNumberArea(const QRect &, int);
 
 private:
-	QWidget* lineNumberArea;
-	CppHighlighter* highlighter;
+  QWidget *lineNumberArea;
+  CppHighlighter *highlighter;
 };
 
-
-class LineNumberArea : public QWidget
-{
+class LineNumberArea : public QWidget {
 public:
-	LineNumberArea(CodeViewArea* codeViewArea) : QWidget(codeViewArea), codeViewArea(codeViewArea) {}
+  LineNumberArea(CodeViewArea *codeViewArea)
+      : QWidget(codeViewArea), codeViewArea(codeViewArea) {}
 
-	QSize sizeHint() const {
-		return QSize(codeViewArea->lineNumberAreaWidth(), 0);
-	}
+  QSize sizeHint() const {
+    return QSize(codeViewArea->lineNumberAreaWidth(), 0);
+  }
 
 protected:
-	void paintEvent(QPaintEvent* event) {
-		codeViewArea->lineNumberAreaPaintEvent(event);
-	}
+  void paintEvent(QPaintEvent *event) {
+    codeViewArea->lineNumberAreaPaintEvent(event);
+  }
 
 private:
-	CodeViewArea* codeViewArea;
+  CodeViewArea *codeViewArea;
 };
 
 #endif

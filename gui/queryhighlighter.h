@@ -8,26 +8,25 @@
 #include <QTextCharFormat>
 
 class QueryHighlighter : public QSyntaxHighlighter {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	QueryHighlighter(QTextDocument* parent = nullptr);
+  QueryHighlighter(QTextDocument *parent = nullptr);
 
 protected:
-	void highlightBlock(const QString& text);
+  void highlightBlock(const QString &text);
 
 private:
-	struct HighlightRule {
-		QRegularExpression pattern;
-		QTextCharFormat format;
-	};
+  struct HighlightRule {
+    QRegularExpression pattern;
+    QTextCharFormat format;
+  };
 
-	std::vector<HighlightRule> highlightRules;
+  std::vector<HighlightRule> highlightRules;
 
-	QTextCharFormat keywordFormat;
-	QTextCharFormat quotationFormat;
-	QTextCharFormat sigilsFormat;
+  QTextCharFormat keywordFormat;
+  QTextCharFormat quotationFormat;
+  QTextCharFormat sigilsFormat;
 };
-
 
 #endif

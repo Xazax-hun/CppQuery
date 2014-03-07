@@ -1,30 +1,29 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
-
-template<typename T>
-class OwningPtr {
+template <typename T> class OwningPtr {
 public:
-	OwningPtr() : ptr(nullptr) {}
-	OwningPtr(T* ptr) : ptr(ptr) {}
-	~OwningPtr() { delete ptr; }
+  OwningPtr() : ptr(nullptr) {}
+  OwningPtr(T *ptr) : ptr(ptr) {}
+  ~OwningPtr() { delete ptr; }
 
-	T* operator->() { return ptr; }
+  T *operator->() { return ptr; }
 
-	operator bool() { return ptr; }
+  operator bool() { return ptr; }
 
-	void reset(T* newPtr) {
-		delete ptr;
-		ptr = newPtr;
-	}
+  void reset(T *newPtr) {
+    delete ptr;
+    ptr = newPtr;
+  }
 
-	T* get() { return ptr; }
+  T *get() { return ptr; }
 
 private:
-	T* ptr;
+  T *ptr;
 };
 
-template<typename T>
-OwningPtr<T> makeOwningPtr(T* ptr) { return OwningPtr<T>(ptr); }
+template <typename T> OwningPtr<T> makeOwningPtr(T *ptr) {
+  return OwningPtr<T>(ptr);
+}
 
 #endif

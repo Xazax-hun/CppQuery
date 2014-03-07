@@ -14,65 +14,67 @@ class QueryWidget;
 class CodeViewArea;
 
 class ParserWorker : public QThread {
-	Q_OBJECT
+  Q_OBJECT
 
 signals:
-	void filesDone(int);
-	void parseDone();
+  void filesDone(int);
+  void parseDone();
 
 public:
-	ParserWorker(QWidget* parent);
-	~ParserWorker();
+  ParserWorker(QWidget *parent);
+  ~ParserWorker();
 
-	void setSession(Session* session);
-	
+  void setSession(Session *session);
+
 protected:
-	void run() override;
+  void run() override;
 
 private:
-	void emitFilesDone(int i) { emit filesDone(i); }
+  void emitFilesDone(int i) { emit filesDone(i); }
 
-	Session* session;
+  Session *session;
 };
 
 class MainWindow : public QMainWindow {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	MainWindow();
-	~MainWindow();
+  MainWindow();
+  ~MainWindow();
 
-public slots:
-	void executeQuery(const std::string& query);
-	void openResult(const QModelIndex& index);
+public
+slots:
+  void executeQuery(const std::string &query);
+  void openResult(const QModelIndex &index);
 
-private slots:
-	void about();
+private
+slots:
+  void about();
 
 private:
-	void createMenuBar();
-	void openMatcherReference();
-	void open();
+  void createMenuBar();
+  void openMatcherReference();
+  void open();
 
-	QTableView* searchResults;
+  QTableView *searchResults;
 
-	CodeViewArea* resultText;
-	QueryWidget* queryWidget;
+  CodeViewArea *resultText;
+  QueryWidget *queryWidget;
 
-	QMenu* fileMenu;
-	QMenu* helpMenu;
+  QMenu *fileMenu;
+  QMenu *helpMenu;
 
-	QAction* openAct;
-	QAction* exitAct;
+  QAction *openAct;
+  QAction *exitAct;
 
-	QAction* matcherHelpAct;
-	QAction* aboutAct;
-	QAction* aboutQtAct;
+  QAction *matcherHelpAct;
+  QAction *aboutAct;
+  QAction *aboutQtAct;
 
-	ParserWorker* parser;
-	QProgressDialog* parseProgress;
+  ParserWorker *parser;
+  QProgressDialog *parseProgress;
 
-	OwningPtr<Session> session;
+  OwningPtr<Session> session;
 };
 
 #endif // __MAINWINDOW_H__

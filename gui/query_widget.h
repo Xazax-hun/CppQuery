@@ -7,21 +7,22 @@ class QueryHighlighter;
 class AutoCompleterTextEdit;
 
 class QueryWidget : public QWidget {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	QueryWidget(QWidget* parent = nullptr);
+  QueryWidget(QWidget *parent = nullptr);
 
-public slots:
-	void executeButtonPressed();
+public
+slots:
+  void executeButtonPressed();
 
 signals:
-	void executeQuery(const std::string& query);
+  void executeQuery(const std::string &query);
 
 private:
-	AutoCompleterTextEdit* queryText;
-	QPushButton* execute;
-	QueryHighlighter* highlighter;
+  AutoCompleterTextEdit *queryText;
+  QPushButton *execute;
+  QueryHighlighter *highlighter;
 };
 
 #endif

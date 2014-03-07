@@ -9,222 +9,240 @@
 #include "session.h"
 
 MainWindow::MainWindow() {
-	setWindowTitle(tr("CppQuery"));
+  setWindowTitle(tr("CppQuery"));
 
-	QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
-	QDockWidget *queryTextDock = new QDockWidget(tr("Query"), this);
+  QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
+  QDockWidget *queryTextDock = new QDockWidget(tr("Query"), this);
 
-	searchResultDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	queryTextDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+  searchResultDock->setFeatures(QDockWidget::DockWidgetMovable |
+                                QDockWidget::DockWidgetFloatable);
+  queryTextDock->setFeatures(QDockWidget::DockWidgetMovable |
+                             QDockWidget::DockWidgetFloatable);
 
-	searchResults = new QTableView(searchResultDock);
-	queryWidget = new QueryWidget(queryTextDock);
+  searchResults = new QTableView(searchResultDock);
+  queryWidget = new QueryWidget(queryTextDock);
 
-	searchResults->setSelectionMode(QAbstractItemView::NoSelection);
-	QStandardItemModel* model = new QStandardItemModel(0, 6, searchResults);
-	QStringList headers;
-	headers << tr("id") << tr("Filename") << tr("Start Line") << tr("Start Col") << tr("End Line") << tr("End Col");
-	model->setHorizontalHeaderLabels(headers);
+  searchResults->setSelectionMode(QAbstractItemView::NoSelection);
+  QStandardItemModel *model = new QStandardItemModel(0, 6, searchResults);
+  QStringList headers;
+  headers << tr("id") << tr("Filename") << tr("Start Line") << tr("Start Col")
+          << tr("End Line") << tr("End Col");
+  model->setHorizontalHeaderLabels(headers);
 
-	searchResults->setModel(model);
-	searchResults->setGridStyle(Qt::NoPen);
-	searchResults->setAlternatingRowColors(true);
-	searchResults->verticalHeader()->hide();
-	searchResults->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	searchResults->setSelectionMode(QAbstractItemView::NoSelection);
-	searchResults->setDragEnabled(false);
-	searchResults->setTextElideMode(Qt::ElideLeft);
-	searchResults->resizeColumnsToContents();
-	searchResults->horizontalHeader()->setStretchLastSection(true);
+  searchResults->setModel(model);
+  searchResults->setGridStyle(Qt::NoPen);
+  searchResults->setAlternatingRowColors(true);
+  searchResults->verticalHeader()->hide();
+  searchResults->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  searchResults->setSelectionMode(QAbstractItemView::NoSelection);
+  searchResults->setDragEnabled(false);
+  searchResults->setTextElideMode(Qt::ElideLeft);
+  searchResults->resizeColumnsToContents();
+  searchResults->horizontalHeader()->setStretchLastSection(true);
 
-	searchResultDock->setWidget(searchResults);
-	queryTextDock->setWidget(queryWidget);
+  searchResultDock->setWidget(searchResults);
+  queryTextDock->setWidget(queryWidget);
 
-	addDockWidget(Qt::LeftDockWidgetArea, searchResultDock);
-	addDockWidget(Qt::BottomDockWidgetArea, queryTextDock);
+  addDockWidget(Qt::LeftDockWidgetArea, searchResultDock);
+  addDockWidget(Qt::BottomDockWidgetArea, queryTextDock);
 
-	resultText = new CodeViewArea(this);
-	setCentralWidget(resultText);
-	resultText->setReadOnly(true);
-	resultText->setLineWrapMode(QPlainTextEdit::NoWrap);
+  resultText = new CodeViewArea(this);
+  setCentralWidget(resultText);
+  resultText->setReadOnly(true);
+  resultText->setLineWrapMode(QPlainTextEdit::NoWrap);
 
-	createMenuBar();
+  createMenuBar();
 
-	statusBar()->showMessage(tr("Ready"));
+  statusBar()->showMessage(tr("Ready"));
 
-	parser = new ParserWorker(this);
-	parseProgress = new QProgressDialog(tr("Parsing files..."), tr("Cancel"), 0, 0, this);
-	parseProgress->setWindowModality(Qt::WindowModal);
-	parseProgress->hide();
+  parser = new ParserWorker(this);
+  parseProgress =
+      new QProgressDialog(tr("Parsing files..."), tr("Cancel"), 0, 0, this);
+  parseProgress->setWindowModality(Qt::WindowModal);
+  parseProgress->hide();
 
-	connect(queryWidget, &QueryWidget::executeQuery, this, &MainWindow::executeQuery);
-	connect(searchResults, &QTableView::doubleClicked, this, &MainWindow::openResult);
+  connect(queryWidget, &QueryWidget::executeQuery, this,
+          &MainWindow::executeQuery);
+  connect(searchResults, &QTableView::doubleClicked, this,
+          &MainWindow::openResult);
 
-	// Connect the options to the worker thread;
-	connect(parser, &ParserWorker::filesDone,[this](int i) {
-		parseProgress->setValue(i);
-	});
+  // Connect the options to the worker thread;
+  connect(parser, &ParserWorker::filesDone,
+          [this](int i) { parseProgress->setValue(i); });
 
-	connect(parser, &ParserWorker::parseDone,[this]() {
-		parseProgress->hide();
-	});
+  connect(parser, &ParserWorker::parseDone,
+          [this]() { parseProgress->hide(); });
 
-	// Cancel button terminates the parser thread
-	connect(parseProgress, &QProgressDialog::canceled, [this](){
-		parser->terminate();
-		session.reset(nullptr);
-	});
+  // Cancel button terminates the parser thread
+  connect(parseProgress, &QProgressDialog::canceled, [this]() {
+    parser->terminate();
+    session.reset(nullptr);
+  });
 }
 
 MainWindow::~MainWindow() {
-	delete searchResults->model();
-	delete parser;
+  delete searchResults->model();
+  delete parser;
 }
 
 void MainWindow::createMenuBar() {
-	openAct = new QAction(tr("&Open..."), this);
-	exitAct = new QAction(tr("E&xit"), this);
-	matcherHelpAct = new QAction(tr("Matcher reference"), this);
-	aboutAct = new QAction(tr("About"), this);
-	aboutQtAct = new QAction(tr("About Qt"), this);
+  openAct = new QAction(tr("&Open..."), this);
+  exitAct = new QAction(tr("E&xit"), this);
+  matcherHelpAct = new QAction(tr("Matcher reference"), this);
+  aboutAct = new QAction(tr("About"), this);
+  aboutQtAct = new QAction(tr("About Qt"), this);
 
-	openAct->setShortcuts(QKeySequence::Open);
-	openAct->setStatusTip(tr("Open a JSON compilation database."));
+  openAct->setShortcuts(QKeySequence::Open);
+  openAct->setStatusTip(tr("Open a JSON compilation database."));
 
-	exitAct->setShortcuts(QKeySequence::Quit);
+  exitAct->setShortcuts(QKeySequence::Quit);
 
-	connect(openAct, &QAction::triggered, this, &MainWindow::open);
-	connect(exitAct, &QAction::triggered, this, &MainWindow::close);
-	connect(matcherHelpAct, &QAction::triggered, this, &MainWindow::openMatcherReference);
-	connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
-	connect(aboutQtAct, &QAction::triggered, this, &QApplication::aboutQt);
+  connect(openAct, &QAction::triggered, this, &MainWindow::open);
+  connect(exitAct, &QAction::triggered, this, &MainWindow::close);
+  connect(matcherHelpAct, &QAction::triggered, this,
+          &MainWindow::openMatcherReference);
+  connect(aboutAct, &QAction::triggered, this, &MainWindow::about);
+  connect(aboutQtAct, &QAction::triggered, this, &QApplication::aboutQt);
 
-	fileMenu = menuBar()->addMenu(tr("&File"));
-	helpMenu = menuBar()->addMenu(tr("&Help"));
+  fileMenu = menuBar()->addMenu(tr("&File"));
+  helpMenu = menuBar()->addMenu(tr("&Help"));
 
-	fileMenu->addAction(openAct);
-	fileMenu->addAction(exitAct);
+  fileMenu->addAction(openAct);
+  fileMenu->addAction(exitAct);
 
-	helpMenu->addAction(matcherHelpAct);
-	helpMenu->addAction(aboutAct);
-	helpMenu->addAction(aboutQtAct);
+  helpMenu->addAction(matcherHelpAct);
+  helpMenu->addAction(aboutAct);
+  helpMenu->addAction(aboutQtAct);
 }
 
 void MainWindow::open() {
-	std::string fileName = QFileDialog::getOpenFileName(this,
-    	tr("Open Compilation Database"), "", tr("JSON files (*.json)")).toStdString();
+  std::string fileName =
+      QFileDialog::getOpenFileName(this, tr("Open Compilation Database"), "",
+                                   tr("JSON files (*.json)")).toStdString();
 
-	if (fileName.empty()) return;
+  if (fileName.empty())
+    return;
 
-	try {
-		session.reset(new Session(fileName));
+  try {
+    session.reset(new Session(fileName));
 
-		parseProgress->show();
-		parseProgress->setMaximum(session->getFileCount());
-		parseProgress->setValue(0);
+    parseProgress->show();
+    parseProgress->setMaximum(session->getFileCount());
+    parseProgress->setValue(0);
 
-		parser->setSession(session.get());
-		parser->start();
+    parser->setSession(session.get());
+    parser->start();
 
-
-		// Remove the results of the session that was open earlier
-		QAbstractItemModel* model = searchResults->model();
-		model->removeRows(0, model->rowCount());
-		searchResults->setModel(model);
-	}
-	catch (DatabaseError& e) {
-		QMessageBox::critical(this, tr("Error"), tr("Unable to open compilation database: ") + QString::fromStdString(e.getReason()));
-	}
+    // Remove the results of the session that was open earlier
+    QAbstractItemModel *model = searchResults->model();
+    model->removeRows(0, model->rowCount());
+    searchResults->setModel(model);
+  }
+  catch (DatabaseError &e) {
+    QMessageBox::critical(this, tr("Error"),
+                          tr("Unable to open compilation database: ") +
+                              QString::fromStdString(e.getReason()));
+  }
 }
 
 void MainWindow::about() {
-    QMessageBox::about(this, tr("About Menu"),
-            tr("A query language based on Clang's ASTMatcher library, to provide the programmers with a more efficient way to navigate in huge codebases than simple text searches."));
+  QMessageBox::about(
+      this, tr("About Menu"),
+      tr("A query language based on Clang's ASTMatcher library, to provide the "
+         "programmers with a more efficient way to navigate in huge codebases "
+         "than simple text searches."));
 }
 
 void MainWindow::openMatcherReference() {
-	QDesktopServices::openUrl(QUrl("http://clang.llvm.org/docs/LibASTMatchersReference.html"));
+  QDesktopServices::openUrl(
+      QUrl("http://clang.llvm.org/docs/LibASTMatchersReference.html"));
 }
 
-void MainWindow::executeQuery(const std::string& query) {
-	if (session) {
-		statusBar()->showMessage(tr("Querying..."));
+void MainWindow::executeQuery(const std::string &query) {
+  if (session) {
+    statusBar()->showMessage(tr("Querying..."));
 
-		try {
-			session->runQuery(query);
-		} catch (QueryError& e) {
-			QMessageBox::critical(this, tr("Error"), tr("Unable to parse the query: ") + QString::fromStdString(e.getReason()));
-			statusBar()->showMessage(tr("Query failed."), 3);
-			return;
-		}
+    try {
+      session->runQuery(query);
+    }
+    catch (QueryError &e) {
+      QMessageBox::critical(this, tr("Error"),
+                            tr("Unable to parse the query: ") +
+                                QString::fromStdString(e.getReason()));
+      statusBar()->showMessage(tr("Query failed."), 3);
+      return;
+    }
 
-		QAbstractItemModel* model = searchResults->model();
-		model->removeRows(0, model->rowCount());
-		
-		auto matches = session->getMatches();
+    QAbstractItemModel *model = searchResults->model();
+    model->removeRows(0, model->rowCount());
 
-		unsigned max = matches.size();
-		model->insertRows(0, max);
-		
-		unsigned i = 0;
-		for(const Match& m : matches) {
-			model->setData(model->index(i, 0), QVariant(QString::fromStdString(m.id)), Qt::DisplayRole);
-			model->setData(model->index(i, 1), QVariant(QString::fromStdString(m.fileName)), Qt::DisplayRole);
-			model->setData(model->index(i, 2), QVariant(m.startLine), Qt::DisplayRole);
-			model->setData(model->index(i, 3), QVariant(m.startCol), Qt::DisplayRole);
-			model->setData(model->index(i, 4), QVariant(m.endLine), Qt::DisplayRole);
-			model->setData(model->index(i, 5), QVariant(m.endCol), Qt::DisplayRole);
-			++i;
-		}
+    auto matches = session->getMatches();
 
-		searchResults->setModel(model);
+    unsigned max = matches.size();
+    model->insertRows(0, max);
 
-		statusBar()->showMessage(tr("Ready"));
-	}
+    unsigned i = 0;
+    for (const Match &m : matches) {
+      model->setData(model->index(i, 0), QVariant(QString::fromStdString(m.id)),
+                     Qt::DisplayRole);
+      model->setData(model->index(i, 1),
+                     QVariant(QString::fromStdString(m.fileName)),
+                     Qt::DisplayRole);
+      model->setData(model->index(i, 2), QVariant(m.startLine),
+                     Qt::DisplayRole);
+      model->setData(model->index(i, 3), QVariant(m.startCol), Qt::DisplayRole);
+      model->setData(model->index(i, 4), QVariant(m.endLine), Qt::DisplayRole);
+      model->setData(model->index(i, 5), QVariant(m.endCol), Qt::DisplayRole);
+      ++i;
+    }
+
+    searchResults->setModel(model);
+
+    statusBar()->showMessage(tr("Ready"));
+  }
 }
 
-void MainWindow::openResult(const QModelIndex& index) {
-	int row = index.row();
+void MainWindow::openResult(const QModelIndex &index) {
+  int row = index.row();
 
-	QAbstractItemModel* model = searchResults->model();
+  QAbstractItemModel *model = searchResults->model();
 
-	QString id = model->data(model->index(row, 0)).toString();
-	QString fileName = model->data(model->index(row, 1)).toString();
-	int startLine = model->data(model->index(row, 2)).toInt();
-	int startCol = model->data(model->index(row, 3)).toInt();
-	int endLine = model->data(model->index(row, 4)).toInt();
-	int endCol = model->data(model->index(row, 5)).toInt();
+  QString id = model->data(model->index(row, 0)).toString();
+  QString fileName = model->data(model->index(row, 1)).toString();
+  int startLine = model->data(model->index(row, 2)).toInt();
+  int startCol = model->data(model->index(row, 3)).toInt();
+  int endLine = model->data(model->index(row, 4)).toInt();
+  int endCol = model->data(model->index(row, 5)).toInt();
 
-	QFile file{fileName};
+  QFile file{ fileName };
 
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		assert(false && "Unhandled error");
-	}
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    assert(false && "Unhandled error");
+  }
 
-	QTextStream reader(&file);
+  QTextStream reader(&file);
 
-	resultText->setPlainText(reader.readAll());
+  resultText->setPlainText(reader.readAll());
 
-	resultText->highlightArea(startLine, startCol, endLine, endCol);
+  resultText->highlightArea(startLine, startCol, endLine, endCol);
 }
 
-ParserWorker::ParserWorker(QWidget* parent) :
-	QThread(parent), session(nullptr) {}
+ParserWorker::ParserWorker(QWidget *parent)
+    : QThread(parent), session(nullptr) {}
 
 ParserWorker::~ParserWorker() {}
 
-void ParserWorker::setSession(Session* session) {
-	this->session = session;
-}
+void ParserWorker::setSession(Session *session) { this->session = session; }
 
 void ParserWorker::run() {
-	if (!session) return;
+  if (!session)
+    return;
 
-	int i = 0;
-	session->parseFiles([&i, this](const std::string& TUName) -> bool {
-		emitFilesDone(++i);
-		return true;
-	});
+  int i = 0;
+  session->parseFiles([&i, this ](const std::string & TUName)->bool {
+    emitFilesDone(++i);
+    return true;
+  });
 
-	emit parseDone();
+  emit parseDone();
 }
