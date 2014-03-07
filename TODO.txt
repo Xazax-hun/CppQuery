@@ -1,4 +1,6 @@
 List of tasks to accomplish:
+	* Use namespaces.
+	* Format the whole project with clang format.
 	* Persistent catalogue of Queries with descriptions.
 	* Handling parse errors.
 	* Handling query errors.

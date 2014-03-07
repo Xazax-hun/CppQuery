@@ -65,9 +65,8 @@ MainWindow::MainWindow() {
 		parseProgress->setValue(i);
 	});
 
-	connect(parser, &ParserWorker::parseDone,[this](std::unique_ptr<Session>* session) {
+	connect(parser, &ParserWorker::parseDone,[this]() {
 		parseProgress->hide();
-		this->session = std::move(*session);
 	});
 
 	// Cancel button terminates the parser thread
@@ -119,13 +118,13 @@ void MainWindow::open() {
 
 	if (fileName.empty()) return;
 
-	session = std::unique_ptr<Session>(new Session(fileName));
+	session.reset(new Session(fileName));
 
 	parseProgress->show();
 	parseProgress->setMaximum(session->getFileCount());
 	parseProgress->setValue(0);
 
-	parser->setSession(std::move(session));
+	parser->setSession(session.get());
 	parser->start();
 }
 
@@ -199,8 +198,8 @@ ParserWorker::ParserWorker(QWidget* parent) :
 
 ParserWorker::~ParserWorker() {}
 
-void ParserWorker::setSession(std::unique_ptr<Session> session) {
-	this->session = std::move(session);
+void ParserWorker::setSession(Session* session) {
+	this->session = session;
 }
 
 void ParserWorker::run() {
@@ -208,9 +207,9 @@ void ParserWorker::run() {
 
 	int i = 0;
 	session->parseFiles([&i, this](const std::string& TUName) -> bool {
-		this->emitFilesDone(++i);
+		emitFilesDone(++i);
 		return true;
 	});
 
-	emit parseDone(&session);
+	emit parseDone();
 }

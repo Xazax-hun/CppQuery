@@ -7,6 +7,8 @@
 #include <QtWidgets>
 #include <QThread>
 
+#include "util.h"
+
 class Session;
 class QueryWidget;
 class CodeViewArea;
@@ -16,13 +18,13 @@ class ParserWorker : public QThread {
 
 signals:
 	void filesDone(int);
-	void parseDone(std::unique_ptr<Session>*);
+	void parseDone();
 
 public:
 	ParserWorker(QWidget* parent);
 	~ParserWorker();
 
-	void setSession(std::unique_ptr<Session> session);
+	void setSession(Session* session);
 	
 protected:
 	void run() override;
@@ -30,7 +32,7 @@ protected:
 private:
 	void emitFilesDone(int i) { emit filesDone(i); }
 
-	std::unique_ptr<Session> session;
+	Session* session;
 };
 
 class MainWindow : public QMainWindow {
@@ -70,7 +72,7 @@ private:
 	ParserWorker* parser;
 	QProgressDialog* parseProgress;
 
-	std::unique_ptr<Session> session;
+	OwningPtr<Session> session;
 };
 
 #endif // __MAINWINDOW_H__
