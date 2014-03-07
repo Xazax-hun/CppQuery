@@ -5,6 +5,11 @@
 
 class QCompleter;
 
+
+/// \brief Autocompletion of the ASTMatchers queries.
+///
+/// This widget extends the QTextEdit with autocompletition support. It is used
+/// for autocompleting the ASTMatchers language.
 class AutoCompleterTextEdit : public QTextEdit {
   Q_OBJECT
 
@@ -18,8 +23,7 @@ protected:
   void keyPressEvent(QKeyEvent *e);
   void focusInEvent(QFocusEvent *e);
 
-private
-slots:
+private slots:
   void insertCompletion(const QString &completion);
 
 private:

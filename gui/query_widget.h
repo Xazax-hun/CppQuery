@@ -6,14 +6,18 @@
 class QueryHighlighter;
 class AutoCompleterTextEdit;
 
+
+/// \brief Holds query related buttons and widgets.
+///
+/// This widget is intended to hold every query related functionality. It is a
+/// docked widget on the main window.
 class QueryWidget : public QWidget {
   Q_OBJECT
 
 public:
   QueryWidget(QWidget *parent = nullptr);
 
-public
-slots:
+public slots:
   void executeButtonPressed();
 
 signals:

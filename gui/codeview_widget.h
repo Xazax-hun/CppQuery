@@ -8,6 +8,12 @@
 class CppHighlighter;
 class LineNumberArea;
 
+
+/// \brief The C++ source code viewer.
+///
+/// This class provides several advanced features over QPlainTextEdit. This
+/// includes syntax highlighting of C/C++ files, highlighting arbitrary area of
+/// the text and displaying line numbers at the right side of the widget.
 class CodeViewArea : public QPlainTextEdit {
   Q_OBJECT
 
@@ -21,8 +27,7 @@ public:
 protected:
   void resizeEvent(QResizeEvent *event);
 
-private
-slots:
+private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void updateLineNumberArea(const QRect &, int);
 
@@ -31,6 +36,10 @@ private:
   CppHighlighter *highlighter;
 };
 
+/// \brief Line numbers at the right side of a text widget.
+///
+/// This class is repsonsible for displaying the line numbers for a text editor
+/// or viewer. It is used by CodeViewArea.
 class LineNumberArea : public QWidget {
 public:
   LineNumberArea(CodeViewArea *codeViewArea)

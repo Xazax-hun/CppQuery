@@ -7,6 +7,8 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 
+
+/// \brief Highlighting C++ source files.
 class CppHighlighter : public QSyntaxHighlighter {
   Q_OBJECT
 

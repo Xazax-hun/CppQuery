@@ -1,6 +1,5 @@
 List of tasks to accomplish:
 	* If a matcher expression does not contains bind, automatically bind the top level bindable matcher's result.
-	* Add doxygen documentation.
 	* Use namespaces.
 	* Persistent catalogue of Queries with descriptions.
 	* Multithread parsing.

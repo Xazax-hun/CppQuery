@@ -20,6 +20,8 @@ class ClangTool;
 }
 }
 
+/// Exception when the compilation database is invalid or non-existent. The
+/// reason contains the detailed error report.
 class DatabaseError : std::exception {
 public:
   DatabaseError(const std::string &error) : reason(error) {}
@@ -32,6 +34,8 @@ private:
   std::string reason;
 };
 
+/// Exception for syntactic and semantic errors of queries. The reason contains
+/// the detailed error report.
 class QueryError : std::exception {
 public:
   QueryError(const std::string &error) : reason(error) {}
@@ -44,6 +48,7 @@ private:
   std::string reason;
 };
 
+/// Small POD type to represent a single query result.
 struct Match {
   std::string fileName, id;
   unsigned startLine, startCol;
@@ -52,6 +57,13 @@ struct Match {
 
 bool operator<(const Match &, const Match &);
 
+/// \brief Storage and execution of query related parts.
+///
+/// This class stores the compilation database, the AST of the translation units
+/// and the list of files. It also contains the results form a query. A session
+/// represents a project's set of ASTs. It should be in the memory as long as
+/// the project is inspected. When a project is closed and a new one is opened,
+/// it is safe to delete the old session.
 class Session {
 public:
   Session(const std::string &databasePath);

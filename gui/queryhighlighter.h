@@ -7,6 +7,8 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 
+
+/// \brief Syntax highlighting of ASTMatcher queries.
 class QueryHighlighter : public QSyntaxHighlighter {
   Q_OBJECT
 
