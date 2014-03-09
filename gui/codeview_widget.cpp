@@ -5,6 +5,8 @@
 
 #include "cpphighlighter.h"
 
+using namespace CppQuery;
+
 CodeViewArea::CodeViewArea(QWidget *parent) : QPlainTextEdit(parent) {
   QFont font;
   font.setFamily("Courier");

@@ -5,6 +5,7 @@
 
 class QCompleter;
 
+namespace CppQuery {
 
 /// \brief Autocompletion of the ASTMatchers queries.
 ///
@@ -32,5 +33,6 @@ private:
 private:
   QCompleter *comp;
 };
+}
 
 #endif

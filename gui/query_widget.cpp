@@ -3,6 +3,8 @@
 #include "queryhighlighter.h"
 #include "autocompleter_textedit.h"
 
+using namespace CppQuery;
+
 QueryWidget::QueryWidget(QWidget *parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout;
 

@@ -5,9 +5,10 @@
 
 // Inspired by QT examples
 
+namespace CppQuery {
+
 class CppHighlighter;
 class LineNumberArea;
-
 
 /// \brief The C++ source code viewer.
 ///
@@ -57,5 +58,6 @@ protected:
 private:
   CodeViewArea *codeViewArea;
 };
+}
 
 #endif

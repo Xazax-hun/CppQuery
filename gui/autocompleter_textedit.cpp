@@ -3,6 +3,8 @@
 #include <QCompleter>
 #include <QtWidgets>
 
+using namespace CppQuery;
+
 AutoCompleterTextEdit::AutoCompleterTextEdit(QWidget *parent)
     : QTextEdit(parent), comp(nullptr) {}
 

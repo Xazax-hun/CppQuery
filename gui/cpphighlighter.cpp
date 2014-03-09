@@ -1,5 +1,7 @@
 #include "cpphighlighter.h"
 
+using namespace CppQuery;
+
 CppHighlighter::CppHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent) {
 

@@ -16,7 +16,9 @@ using namespace clang;
 using namespace tooling;
 using namespace ast_matchers;
 
-bool operator<(const Match &lhs, const Match &rhs) {
+using namespace CppQuery;
+
+bool CppQuery::operator<(const Match &lhs, const Match &rhs) {
   return std::tie(lhs.fileName, lhs.id, lhs.startLine, lhs.startCol,
                   lhs.endLine,
                   lhs.endCol) < std::tie(rhs.fileName, rhs.id, rhs.startLine,

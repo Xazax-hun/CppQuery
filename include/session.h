@@ -20,6 +20,8 @@ class ClangTool;
 }
 }
 
+namespace CppQuery {
+
 /// Exception when the compilation database is invalid or non-existent. The
 /// reason contains the detailed error report.
 class DatabaseError : std::exception {
@@ -83,5 +85,6 @@ private:
   std::unique_ptr<clang::tooling::ClangTool> tool;
   std::set<Match> foundMatches;
 };
+}
 
 #endif

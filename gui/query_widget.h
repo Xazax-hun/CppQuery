@@ -3,9 +3,10 @@
 
 #include <QtWidgets>
 
+namespace CppQuery {
+
 class QueryHighlighter;
 class AutoCompleterTextEdit;
-
 
 /// \brief Holds query related buttons and widgets.
 ///
@@ -28,5 +29,6 @@ private:
   QPushButton *execute;
   QueryHighlighter *highlighter;
 };
+}
 
 #endif

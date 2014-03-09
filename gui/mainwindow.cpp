@@ -8,6 +8,8 @@
 #include "codeview_widget.h"
 #include "session.h"
 
+using namespace CppQuery;
+
 MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
 

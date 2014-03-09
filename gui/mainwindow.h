@@ -9,6 +9,8 @@
 
 #include "util.h"
 
+namespace CppQuery {
+
 class Session;
 class QueryWidget;
 class CodeViewArea;
@@ -106,5 +108,6 @@ private:
 
   OwningPtr<Session> session;
 };
+}
 
 #endif // __MAINWINDOW_H__

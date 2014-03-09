@@ -7,6 +7,7 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 
+namespace CppQuery {
 
 /// \brief Highlighting C++ source files.
 class CppHighlighter : public QSyntaxHighlighter {
@@ -36,5 +37,6 @@ private:
   QTextCharFormat sigilsFormat;
   QTextCharFormat directiveFormat;
 };
+}
 
 #endif

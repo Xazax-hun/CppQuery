@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   QCoreApplication::setOrganizationDomain("github.com/Xazax-hun/CppQuery");
   QCoreApplication::setApplicationName("CppQuery");
 
-  MainWindow w;
+  CppQuery::MainWindow w;
   w.show();
 
   return app.exec();

@@ -7,6 +7,7 @@
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 
+namespace CppQuery {
 
 /// \brief Syntax highlighting of ASTMatcher queries.
 class QueryHighlighter : public QSyntaxHighlighter {
@@ -30,5 +31,6 @@ private:
   QTextCharFormat quotationFormat;
   QTextCharFormat sigilsFormat;
 };
+}
 
 #endif
