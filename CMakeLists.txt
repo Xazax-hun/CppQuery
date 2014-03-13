@@ -69,7 +69,7 @@ execute_process (
 STRING(REGEX REPLACE "(\r?\n)+$" "" LLVM_CXX_FLAGS "${LLVM_CXX_FLAGS}")
 STRING(REGEX REPLACE "-DNDEBUG" "" LLVM_CXX_FLAGS "${LLVM_CXX_FLAGS}")
 
-set (CPPQUERY_CXX_FLAGS "${LLVM_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-strict-aliasing -Wno-unused-parameter -Wno-parentheses -Wno-unknown-warning-option -pedantic -std=c++11 -fPIC -fexceptions -Wno-unused-local-typedefs")
+set (CPPQUERY_CXX_FLAGS "${LLVM_CXX_FLAGS} -Wall -Wextra -pedantic -Wno-strict-aliasing -Wno-unused-parameter -Wno-parentheses -Wno-unknown-warning-option -pedantic -std=c++11 -fPIC -fexceptions -fno-rtti -Wno-unused-local-typedefs")
 
 execute_process (
   COMMAND llvm-config --ldflags
@@ -81,12 +81,7 @@ set (CPPQUERY_LD_FLAGS "${LLVM_LD_FLAGS}")
 
 set (CLANGLIBS clangTooling clangFrontend clangSerialization clangDriver clangRewriteCore clangParse clangSema
            clangEdit clangAnalysis clangAST clangASTMatchers clangLex clangBasic clangDynamicASTMatchers LLVMTransformUtils
-           LLVMARMAsmParser LLVMX86AsmParser LLVMMipsAsmParser LLVMX86Desc LLVMSparcDesc LLVMPowerPCDesc LLVMARMDesc LLVMMipsDesc
-           LLVMXCoreDesc LLVMMSP430Desc LLVMNVPTXDesc LLVMHexagonDesc LLVMX86AsmPrinter
-           LLVMARMAsmPrinter LLVMMipsAsmPrinter LLVMPowerPCAsmPrinter LLVMMSP430AsmPrinter
-           LLVMX86Info LLVMSparcInfo LLVMPowerPCInfo LLVMARMInfo LLVMMipsInfo LLVMXCoreInfo
-           LLVMMSP430Info LLVMCppBackendInfo LLVMNVPTXInfo LLVMHexagonInfo LLVMX86Utils
-           LLVMAsmParser LLVMMCParser LLVMMC LLVMCore LLVMBitWriter LLVMBitReader LLVMOption LLVMSupport)
+           LLVMCppBackendInfo LLVMMCParser LLVMMC LLVMCore LLVMBitWriter LLVMBitReader LLVMOption LLVMSupport pthread dl)
 
 if (ARCH STREQUAL "32")
   set (CPPQUERY_CXX_FLAGS "${CPPQUERY_CXX_FLAGS} -m32")
@@ -114,5 +109,5 @@ target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
 # Unit Tests
 add_executable(unittest tests/automata_generator/test.cpp)
-target_link_libraries(unittest ${CLANGLIBS} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CLANGLIBS})
 add_test(unittest unittest)
