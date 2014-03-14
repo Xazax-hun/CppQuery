@@ -4,12 +4,14 @@ project (CppQuery)
 # Libraries
 
 # GTests
-find_package(GTest REQUIRED)
-enable_testing()
+find_package(GTest)
+if (GTEST_FOUND)
+  enable_testing()
+endif ()
 
 # Doxygen support
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
+if (DOXYGEN_FOUND)
   configure_file(Doxyfile.in
                  ${PROJECT_BINARY_DIR}/Doxyfile )
 
@@ -21,11 +23,11 @@ if(DOXYGEN_FOUND)
 
   set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/Doxyfile")
   set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/docs")
-endif()
+endif ()
 
 # Qt libraries
 find_package(Qt5Widgets 5.2 REQUIRED)
-set(CMAKE_AUTOMOC ON)
+set (CMAKE_AUTOMOC ON)
 
 # Configurations
 
@@ -108,6 +110,9 @@ add_executable(CppQuery ${GUI_SOURCES} ${SOURCES})
 target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
 # Unit Tests
-add_executable(unittest tests/automata_generator/test.cpp)
-target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CLANGLIBS})
-add_test(unittest unittest)
+if (GTEST_FOUND)
+  file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cpp)
+  add_executable(unittest ${TEST_SOURCES})
+  target_link_libraries(unittest ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CLANGLIBS})
+  add_test(unittest unittest)
+endif ()

@@ -10,3 +10,10 @@ List of tasks to accomplish:
 	* Add possibility to filter compilation databases for path.
 	* Reduce the size of TUs (remove QTWidgets include from headers).
 	* Remove using directives where it makes sense.
+	* Add feature: CompilationDatabase::autoDetectFromDirectory and CompilationDatabase::autoDetectFromSource
+	* Do not try to execute the query if empty string is inside the query text.
+	* Add proper size hints and default sizes to the GUI.
+	* Add screenshots to the Readme.md
+	* Correct path of the lib folder.
+	* "Incremential" reparse of projects.
+	* Collect warnings and errors during the parsing.
