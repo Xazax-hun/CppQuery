@@ -3,6 +3,9 @@ project (CppQuery)
 
 # Libraries
 
+# Boost
+find_package(Boost REQUIRED)
+
 # GTests
 find_package(GTest)
 if (GTEST_FOUND)
