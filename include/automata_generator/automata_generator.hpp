@@ -6,8 +6,7 @@
 #include <boost/mpl/push_back.hpp>
 #include <boost/mpl/pop_front.hpp>
 #include <boost/mpl/front.hpp>
-#include <boost/mpl/back_inserter.hpp>
-#include <boost/mpl/copy.hpp>
+#include <boost/mpl/joint_view.hpp>
 
 #include "meta_lib/convert_vector.hpp"
 #include "meta_lib/metastring.hpp"
@@ -68,9 +67,8 @@ template <typename Pair, typename... Pairs> struct AutomataImpl {
 
   // merge the results for 'Pair' with the results of the elements of 'Pairs'
   // (recurse)
-  typedef typename boost::mpl::copy<typename AutomataImpl<Pairs...>::result,
-                                    boost::mpl::back_inserter<partial> >::type
-  result;
+  typedef typename boost::mpl::joint_view<
+      typename AutomataImpl<Pairs...>::result, partial>::type result;
 };
 
 template <typename Pair> struct AutomataImpl<Pair> {
@@ -85,8 +83,7 @@ template <typename... Pairs> struct Automata {
   using CompRules = ComposedRules<DefaultGetInstancePolicy, IsComposables...>;
 
   typedef typename AutomataImpl<Pairs...>::result vector;
-  typedef typename ConvertVector<CompRules, boost::mpl::size<vector>::value,
-                                 vector>::result result;
+  typedef typename ConvertVector<CompRules, vector>::result result;
 };
 
 template <typename GetInstancePolicy, typename... Pairs>
@@ -95,8 +92,7 @@ struct AutomataWithGetInst {
   using CompRules = ComposedRules<GetInstancePolicy, IsComposables...>;
 
   typedef typename AutomataImpl<Pairs...>::result vector;
-  typedef typename ConvertVector<CompRules, boost::mpl::size<vector>::value,
-                                 vector>::result result;
+  typedef typename ConvertVector<CompRules, vector>::result result;
 };
 
 #endif
