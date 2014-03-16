@@ -4,7 +4,7 @@
 #include <boost/preprocessor/repetition/repeat.hpp>
 
 #ifndef STRING_MAX_LENGTH
-#define STRING_MAX_LENGTH 20
+#define STRING_MAX_LENGTH 35
 #endif
 
 #define DO(z, n, s) at(s, n),

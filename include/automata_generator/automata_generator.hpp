@@ -1,15 +1,9 @@
 #ifndef __AUTOMATA_GENERATOR__
 #define __AUTOMATA_GENERATOR__
 
-#include <boost/mpl/vector.hpp>
-#include <boost/mpl/size.hpp>
-#include <boost/mpl/push_back.hpp>
-#include <boost/mpl/pop_front.hpp>
-#include <boost/mpl/front.hpp>
-#include <boost/mpl/joint_view.hpp>
-
 #include "meta_lib/convert_vector.hpp"
 #include "meta_lib/metastring.hpp"
+#include "meta_lib/variadic_vec.hpp"
 
 #include "rule_generator.hpp"
 #include "rule_composer.hpp"
@@ -26,19 +20,18 @@ struct DefaultGetInstancePolicy {
 // after Dest.
 template <typename Dest, typename Target, typename... Targets>
 struct TryComposeWithAll {
-  typedef typename boost::mpl::push_back<
-      typename boost::mpl::push_back<
-          typename TryComposeWithAll<Dest, Targets...>::result,
-          ComposabilityRule<Dest, Target> >::type,
-      ComposabilityRule<Target, Dest> >::type result;
+  typedef typename variadic::push_back<
+      typename TryComposeWithAll<Dest, Targets...>::result,
+      ComposabilityRule<Dest, Target>,
+      ComposabilityRule<Target, Dest> >::result result;
 };
 
 // Specialized for Dest == Target
 template <typename Dest, typename... Targets>
 struct TryComposeWithAll<Dest, Dest, Targets...> {
-  typedef typename boost::mpl::push_back<
+  typedef typename variadic::push_back<
       typename TryComposeWithAll<Dest, Targets...>::result,
-      ComposabilityRule<Dest, Dest> >::type result;
+      ComposabilityRule<Dest, Dest> >::result result;
 };
 
 template <typename Dest, typename Target>
@@ -46,14 +39,14 @@ struct TryComposeWithAll<Dest, Target> {
   // check if we can compose Dest and Target in any way, i.e. Dest(Target) or
   // Target(Dest)
 
-  typedef typename boost::mpl::vector<ComposabilityRule<Dest, Target>,
-                                      ComposabilityRule<Target, Dest> >::type
+  typedef typename variadic::vector<ComposabilityRule<Dest, Target>,
+                                    ComposabilityRule<Target, Dest> >::result
   result;
 };
 
 // Specialized for Dest == Target
 template <typename Dest> struct TryComposeWithAll<Dest, Dest> {
-  typedef typename boost::mpl::vector<ComposabilityRule<Dest, Dest> >::type
+  typedef typename variadic::vector<ComposabilityRule<Dest, Dest> >::result
   result;
 };
 
@@ -67,12 +60,12 @@ template <typename Pair, typename... Pairs> struct AutomataImpl {
 
   // merge the results for 'Pair' with the results of the elements of 'Pairs'
   // (recurse)
-  typedef typename boost::mpl::joint_view<
-      typename AutomataImpl<Pairs...>::result, partial>::type result;
+  typedef typename variadic::append<typename AutomataImpl<Pairs...>::result,
+                                    partial>::result result;
 };
 
 template <typename Pair> struct AutomataImpl<Pair> {
-  typedef typename boost::mpl::vector<ComposabilityRule<Pair, Pair> >::type
+  typedef typename variadic::vector<ComposabilityRule<Pair, Pair> >::result
   result;
 };
 
@@ -82,8 +75,8 @@ template <typename... Pairs> struct Automata {
   template <typename... IsComposables>
   using CompRules = ComposedRules<DefaultGetInstancePolicy, IsComposables...>;
 
-  typedef typename AutomataImpl<Pairs...>::result vector;
-  typedef typename ConvertVector<CompRules, vector>::result result;
+  typedef typename AutomataImpl<Pairs...>::result vec;
+  typedef typename variadic::copy_pack<vec, CompRules>::result result;
 };
 
 template <typename GetInstancePolicy, typename... Pairs>
@@ -91,8 +84,7 @@ struct AutomataWithGetInst {
   template <typename... IsComposables>
   using CompRules = ComposedRules<GetInstancePolicy, IsComposables...>;
 
-  typedef typename AutomataImpl<Pairs...>::result vector;
-  typedef typename ConvertVector<CompRules, vector>::result result;
+  typedef typename AutomataImpl<Pairs...>::result vec;
+  typedef typename variadic::copy_pack<vec, CompRules>::result result;
 };
-
 #endif
