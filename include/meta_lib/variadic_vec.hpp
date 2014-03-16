@@ -16,14 +16,9 @@ struct push_back<vector<Ts...>, elements...> {
 
 template <typename first, typename second> struct append;
 
-template <typename... Firsts, typename SecondHead, typename... Seconds>
-struct append<vector<Firsts...>, vector<SecondHead, Seconds...> > {
-  using result = typename append<vector<Firsts..., SecondHead>,
-                                 vector<Seconds...> >::result;
-};
-
-template <typename... Firsts> struct append<vector<Firsts...>, vector<> > {
-  using result = vector<Firsts...>;
+template <typename... Firsts, typename... Seconds>
+struct append<vector<Firsts...>, vector<Seconds...> > {
+  using result = vector<Firsts..., Seconds...>;
 };
 
 template <typename... Vs> struct concat;
