@@ -27,6 +27,7 @@ class ParserWorker : public QThread {
 signals:
   void filesDone(int);
   void parseDone();
+  void parseFail(const QString);
 
 public:
   ParserWorker(QWidget *parent);
@@ -87,6 +88,9 @@ private:
 
   /// Opens a json compilation database
   void open();
+
+  /// Handle parsing failures
+  void onParseFail(const QString reason);
 
   QTableView *searchResults;
 

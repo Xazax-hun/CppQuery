@@ -10,6 +10,7 @@
 #include "clang/Tooling/JSONCompilationDatabase.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/TextDiagnosticBuffer.h"
 #include "clang/Lex/Lexer.h"
 
 using namespace clang;
@@ -50,24 +51,41 @@ class ASTBuilderAction : public ToolAction {
 public:
   ASTBuilderAction(std::vector<ASTUnit *> &ASTlist,
                    const std::function<bool(const std::string &)> &onTUend)
-      : ASTlist(ASTlist), onTUend(onTUend) {}
+      : ASTlist(ASTlist), onTUend(onTUend) {
+    errorNum = 0;
+  }
 
   bool runInvocation(CompilerInvocation *invocation, FileManager *files,
                      DiagnosticConsumer *diagConsumer) {
+    TextDiagnosticBuffer diag;
     ASTUnit *AST = ASTUnit::LoadFromCompilerInvocation(
         invocation, CompilerInstance::createDiagnostics(
-                        &invocation->getDiagnosticOpts(), diagConsumer, false));
+                        &invocation->getDiagnosticOpts(), &diag, false));
 
     if (!AST)
       return false;
 
-    if (onTUend(AST->getMainFileName().str()))
+    if (onTUend(AST->getMainFileName().str())) {
       ASTlist.push_back(AST);
+      SourceManager &srcMgr = AST->getSourceManager();
+      for (TextDiagnosticBuffer::DiagList::const_iterator it = diag.err_begin();
+           it != diag.err_end(); ++it) {
+        errors.push_back(
+            srcMgr.getFilename(it->first).str() + " line: " +
+            std::to_string(srcMgr.getSpellingLineNumber(it->first)) + ": " +
+            it->second + "\n");
+      }
+    }
 
     return true;
   }
 
+  std::vector<std::string>::const_iterator errBegin() { return errors.begin(); }
+  std::vector<std::string>::const_iterator errEnd() { return errors.end(); }
+
 private:
+  unsigned errorNum;
+  std::vector<std::string> errors;
   std::vector<ASTUnit *> &ASTlist;
   const std::function<bool(const std::string &)> &onTUend;
 };
@@ -76,9 +94,14 @@ private:
 void
 Session::parseFiles(const std::function<bool(const std::string &)> &onTUend) {
   ASTBuilderAction action(ASTlist, onTUend);
-  int ret = tool->run(&action);
-  assert(!ret && "TODO: handle this error"); // Occurs when a file can not be
-                                             // parsed e.g. compilation error.
+
+  if (tool->run(&action) || action.errBegin() != action.errEnd()) {
+    std::string errors;
+    for (auto it = action.errBegin(); it != action.errEnd(); ++it) {
+      errors += *it;
+    }
+    throw ParseError(errors);
+  }
 }
 
 namespace {

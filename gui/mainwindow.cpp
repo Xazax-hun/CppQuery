@@ -55,8 +55,6 @@ MainWindow::MainWindow() {
 
   createMenuBar();
 
-  statusBar()->showMessage(tr("Ready"));
-
   parser = new ParserWorker(this);
   parseProgress =
       new QProgressDialog(tr("Parsing files..."), tr("Cancel"), 0, 0, this);
@@ -75,11 +73,16 @@ MainWindow::MainWindow() {
   connect(parser, &ParserWorker::parseDone,
           [this]() { parseProgress->hide(); });
 
+  connect(parser, &ParserWorker::parseFail, this, &MainWindow::onParseFail,
+          Qt::QueuedConnection);
+
   // Cancel button terminates the parser thread
   connect(parseProgress, &QProgressDialog::canceled, [this]() {
     parser->terminate();
     session.reset(nullptr);
   });
+
+  statusBar()->showMessage(tr("Ready"));
 }
 
 MainWindow::~MainWindow() {
@@ -117,6 +120,12 @@ void MainWindow::createMenuBar() {
   helpMenu->addAction(aboutQtAct);
 }
 
+void MainWindow::onParseFail(const QString reason) {
+  QMessageBox::critical(this, tr("Error"), tr("Unable to parse C++ code:\n") +
+                                               reason);
+  session.reset(nullptr);
+}
+
 void MainWindow::open() {
   std::string fileName =
       QFileDialog::getOpenFileName(this, tr("Open Compilation Database"), "",
@@ -144,6 +153,7 @@ void MainWindow::open() {
     QMessageBox::critical(this, tr("Error"),
                           tr("Unable to open compilation database: ") +
                               QString::fromStdString(e.getReason()));
+    session.reset(nullptr);
   }
 }
 
@@ -240,11 +250,16 @@ void ParserWorker::run() {
   if (!session)
     return;
 
-  int i = 0;
-  session->parseFiles([&i, this ](const std::string & TUName)->bool {
-    emitFilesDone(++i);
-    return true;
-  });
+  try {
+    int i = 0;
+    session->parseFiles([&i, this ](const std::string & TUName)->bool {
+      emitFilesDone(++i);
+      return true;
+    });
+  }
+  catch (ParseError &e) {
+    emit parseFail(QString::fromStdString(e.getReason()));
+  }
 
   emit parseDone();
 }

@@ -6,6 +6,7 @@
 namespace {
 using namespace clang::ast_matchers;
 typedef typename Automata<
+	// Node Matchers
     MATCHER(ctorInitializer), MATCHER(accessSpecDecl),
     MATCHER(classTemplateDecl), MATCHER(classTemplateSpecializationDecl),
     MATCHER(constructorDecl), MATCHER(decl), MATCHER(declaratorDecl),
@@ -46,7 +47,14 @@ typedef typename Automata<
     MATCHER(rValueReferenceType), MATCHER(recordType), MATCHER(referenceType),
     MATCHER(templateSpecializationType), MATCHER(type), MATCHER(typedefType),
     MATCHER(unaryTransformType),
-    MATCHER(variableArrayType)>::result GeneratedAutomata;
+    MATCHER(variableArrayType),
+
+    // Narrowing matchers
+    MATCHER(hasOperatorName), MATCHER(argumentCountIs),
+    MATCHER(isImplicit), MATCHER(isWritten),
+    MATCHER(hasOverloadedOperatorName), MATCHER(isConst), MATCHER(isOverride),
+    MATCHER(isVirtual)
+    >::result GeneratedAutomata;
 }
 
 using namespace CppQuery;

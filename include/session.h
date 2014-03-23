@@ -36,6 +36,20 @@ private:
   std::string reason;
 };
 
+/// Exception for syntactic and semantic errors of C++ code. The reason contains
+/// the detailed error report.
+class ParseError : std::exception {
+public:
+  ParseError(const std::string &error) : reason(error) {}
+  const std::string &getReason() const { return reason; }
+  const char *what() const noexcept override {
+    return "Unable to parse the C++ code.";
+  }
+
+private:
+  std::string reason;
+};
+
 /// Exception for syntactic and semantic errors of queries. The reason contains
 /// the detailed error report.
 class QueryError : std::exception {
