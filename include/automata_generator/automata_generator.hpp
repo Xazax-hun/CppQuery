@@ -3,7 +3,7 @@
 
 #include "meta_lib/convert_vector.hpp"
 #include "meta_lib/metastring.hpp"
-#include "meta_lib/variadic_vec.hpp"
+#include "meta_lib/variadic_list.hpp"
 
 #include "rule_generator.hpp"
 #include "rule_composer.hpp"
@@ -23,7 +23,7 @@ struct TryComposeWithAll {
   typedef typename variadic::push_back<
       typename TryComposeWithAll<Dest, Targets...>::result,
       ComposabilityRule<Dest, Target>,
-      ComposabilityRule<Target, Dest> >::result result;
+      ComposabilityRule<Target, Dest> >::type result;
 };
 
 // Specialized for Dest == Target
@@ -31,7 +31,7 @@ template <typename Dest, typename... Targets>
 struct TryComposeWithAll<Dest, Dest, Targets...> {
   typedef typename variadic::push_back<
       typename TryComposeWithAll<Dest, Targets...>::result,
-      ComposabilityRule<Dest, Dest> >::result result;
+      ComposabilityRule<Dest, Dest> >::type result;
 };
 
 template <typename Dest, typename Target>
@@ -39,15 +39,14 @@ struct TryComposeWithAll<Dest, Target> {
   // check if we can compose Dest and Target in any way, i.e. Dest(Target) or
   // Target(Dest)
 
-  typedef typename variadic::vector<ComposabilityRule<Dest, Target>,
-                                    ComposabilityRule<Target, Dest> >::result
+  typedef typename variadic::list<ComposabilityRule<Dest, Target>,
+                                  ComposabilityRule<Target, Dest> >::type
   result;
 };
 
 // Specialized for Dest == Target
 template <typename Dest> struct TryComposeWithAll<Dest, Dest> {
-  typedef typename variadic::vector<ComposabilityRule<Dest, Dest> >::result
-  result;
+  typedef typename variadic::list<ComposabilityRule<Dest, Dest> >::type result;
 };
 
 // Try to compose all of the possible pairing of the functions.
@@ -61,12 +60,11 @@ template <typename Pair, typename... Pairs> struct AutomataImpl {
   // merge the results for 'Pair' with the results of the elements of 'Pairs'
   // (recurse)
   typedef typename variadic::append<typename AutomataImpl<Pairs...>::result,
-                                    partial>::result result;
+                                    partial>::type result;
 };
 
 template <typename Pair> struct AutomataImpl<Pair> {
-  typedef typename variadic::vector<ComposabilityRule<Pair, Pair> >::result
-  result;
+  typedef typename variadic::list<ComposabilityRule<Pair, Pair> >::type result;
 };
 
 // 'Pairs' is a pack of (decltype, name) pairs: one such pair represents a
@@ -76,7 +74,7 @@ template <typename... Pairs> struct Automata {
   using CompRules = ComposedRules<DefaultGetInstancePolicy, IsComposables...>;
 
   typedef typename AutomataImpl<Pairs...>::result vec;
-  typedef typename variadic::copy_pack<vec, CompRules>::result result;
+  typedef typename variadic::copy_pack<vec, CompRules>::type result;
 };
 
 template <typename GetInstancePolicy, typename... Pairs>
@@ -85,6 +83,6 @@ struct AutomataWithGetInst {
   using CompRules = ComposedRules<GetInstancePolicy, IsComposables...>;
 
   typedef typename AutomataImpl<Pairs...>::result vec;
-  typedef typename variadic::copy_pack<vec, CompRules>::result result;
+  typedef typename variadic::copy_pack<vec, CompRules>::type result;
 };
 #endif

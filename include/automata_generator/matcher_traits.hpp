@@ -10,6 +10,9 @@
 
 #include "clang/ASTMatchers/ASTMatchers.h"
 
+// TODO: handle templates: possible solution: replace templated parameters with
+// a type such that any type can be converted to that type.
+
 #define MATCHER(x)                                                             \
   std::tuple<typename matcher_trait<decltype(x)>::type,                        \
              typename matcher_trait<decltype(x)>::object_type,                 \
@@ -47,5 +50,7 @@ struct matcher_trait_helper<
 template <typename T>
 struct matcher_trait
     : matcher_trait_helper<T, typename std::is_function<T>::type> {};
+
+
 
 #endif
