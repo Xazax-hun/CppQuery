@@ -35,7 +35,7 @@ template <typename Head, typename Second> struct concat<Head, Second> {
 
 template <typename From, template <typename... Ts> class To> struct copy_pack;
 
-template <typename... Ts, template <typename... Ts> class To>
+template <typename... Ts, template <typename...> class To>
 struct copy_pack<list<Ts...>, To> {
   using type = To<Ts...>;
 };
