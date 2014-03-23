@@ -113,7 +113,7 @@ void Session::runQuery(const std::string &query) {
     CollectBoundNodes collector(boundNodes);
 
     if (!finder.addDynamicMatcher(*matcher, &collector))
-      assert(false && "Unimplemented"); // Fails if the top matcher is not valid
+      throw QueryError("Invalid top level matcher.");
 
     finder.matchAST(ast->getASTContext());
 
