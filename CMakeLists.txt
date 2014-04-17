@@ -106,6 +106,11 @@ add_definitions (${PPDEFINITIONS})
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CPPQUERY_CXX_FLAGS}")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
 
+# Configuration file
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings/settings.ini
+               ${PROJECT_BINARY_DIR}/settings.ini COPYONLY)
+set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/settings.ini")
+
 # Main executable
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE GUI_SOURCES ${PROJECT_SOURCE_DIR}/gui/*.cpp)

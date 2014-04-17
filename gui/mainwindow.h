@@ -9,6 +9,8 @@
 
 #include "util.h"
 
+class QSettings;
+
 namespace CppQuery {
 
 class Session;
@@ -106,6 +108,7 @@ private:
   QAction *matcherHelpAct;
   QAction *aboutAct;
   QAction *aboutQtAct;
+  QSettings *settings;
 
   ParserWorker *parser;
   QProgressDialog *parseProgress;

@@ -16,4 +16,3 @@ List of tasks to accomplish:
 	* Add screenshots to the Readme.md
 	* Correct path of the lib folder.
 	* "Incremential" reparse of projects.
-	* Collect warnings and errors during the parsing.

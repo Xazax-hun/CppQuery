@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <QSettings>
 #include <QDesktopServices>
 
 #include "query_widget.h"
@@ -12,6 +13,9 @@ using namespace CppQuery;
 
 MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
+
+  settings = new QSettings("settings.ini", QSettings::IniFormat, this);
+  settings->setValue("clang/resource-dir", QString("/usr/lib/clang/3.4/include"));
 
   QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
   QDockWidget *queryTextDock = new QDockWidget(tr("Query"), this);
