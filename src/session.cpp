@@ -137,6 +137,12 @@ struct CollectBoundNodes : MatchFinder::MatchCallback {
 }
 
 void Session::runQuery(const std::string &query) {
+  if (query.find(".bind") == std::string::npos)
+    throw QueryError("There is no such node that was bound to an ID.");
+
+  if (ASTlist.empty())
+    throw QueryError("There is no file that was succesfully parsed.");
+
   dynamic::Diagnostics diag;
   llvm::Optional<dynamic::DynTypedMatcher> matcher =
       dynamic::Parser::parseMatcherExpression(query, &diag);

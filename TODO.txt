@@ -14,5 +14,4 @@ List of tasks to accomplish:
 	* Do not try to execute the query if empty string is inside the query text.
 	* Add proper size hints and default sizes to the GUI.
 	* Add screenshots to the Readme.md
-	* Correct path of the lib folder.
 	* "Incremential" reparse of projects.
