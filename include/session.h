@@ -82,7 +82,7 @@ bool operator<(const Match &, const Match &);
 /// it is safe to delete the old session.
 class Session {
 public:
-  Session(const std::string &databasePath);
+  Session(const std::string &databasePath, const std::string &resourceDir);
   ~Session();
 
   unsigned getFileCount() { return files.size(); }

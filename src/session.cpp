@@ -8,6 +8,7 @@
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Tooling/Tooling.h"
 #include "clang/Tooling/JSONCompilationDatabase.h"
+#include "clang/Tooling/ArgumentsAdjusters.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/TextDiagnosticBuffer.h"
@@ -19,34 +20,21 @@ using namespace ast_matchers;
 
 using namespace CppQuery;
 
-bool CppQuery::operator<(const Match &lhs, const Match &rhs) {
-  return std::tie(lhs.fileName, lhs.id, lhs.startLine, lhs.startCol,
-                  lhs.endLine,
-                  lhs.endCol) < std::tie(rhs.fileName, rhs.id, rhs.startLine,
-                                         rhs.startCol, rhs.endLine, rhs.endCol);
-}
-
-Session::Session(const std::string &databasePath) {
-  std::string error;
-  compilationDatabase = std::unique_ptr<JSONCompilationDatabase>(
-      JSONCompilationDatabase::loadFromFile(databasePath, error));
-
-  if (!error.empty())
-    throw DatabaseError(error);
-
-  files = compilationDatabase->getAllFiles();
-  tool = std::unique_ptr<clang::tooling::ClangTool>(
-      new ClangTool(*compilationDatabase, files));
-}
-
-Session::~Session() {
-  for (auto AST : ASTlist) {
-    AST->setUnsafeToFree(false);
-    delete AST;
-  }
-}
-
 namespace {
+
+class ResourceDirSetter : public ArgumentsAdjuster {
+public:
+  ResourceDirSetter(const std::string& s) : resourceDir(s) {}
+
+  CommandLineArguments Adjust(const CommandLineArguments &args) {
+    CommandLineArguments adjustedArgs(args);
+    adjustedArgs.push_back("-resource-dir="+resourceDir);
+    return adjustedArgs;
+  }
+private:
+  std::string resourceDir;
+};
+
 class ASTBuilderAction : public ToolAction {
 public:
   ASTBuilderAction(std::vector<ASTUnit *> &ASTlist,
@@ -89,6 +77,37 @@ private:
   std::vector<ASTUnit *> &ASTlist;
   const std::function<bool(const std::string &)> &onTUend;
 };
+}
+
+bool CppQuery::operator<(const Match &lhs, const Match &rhs) {
+  return std::tie(lhs.fileName, lhs.id, lhs.startLine, lhs.startCol,
+                  lhs.endLine,
+                  lhs.endCol) < std::tie(rhs.fileName, rhs.id, rhs.startLine,
+                                         rhs.startCol, rhs.endLine, rhs.endCol);
+}
+
+Session::Session(const std::string &databasePath,
+                 const std::string &resourceDir) {
+  std::string error;
+  compilationDatabase = std::unique_ptr<JSONCompilationDatabase>(
+      JSONCompilationDatabase::loadFromFile(databasePath, error));
+
+  if (!error.empty())
+    throw DatabaseError(error);
+
+  files = compilationDatabase->getAllFiles();
+  tool = std::unique_ptr<clang::tooling::ClangTool>(
+      new ClangTool(*compilationDatabase, files));
+
+  tool->appendArgumentsAdjuster(new ResourceDirSetter(resourceDir));
+}
+
+Session::~Session() {
+  for (auto AST : ASTlist) {
+    AST->setUnsafeToFree(false);
+    delete AST;
+  }
+  tool->clearArgumentsAdjusters();
 }
 
 void
