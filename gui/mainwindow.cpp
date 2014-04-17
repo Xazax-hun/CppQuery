@@ -13,6 +13,7 @@ using namespace CppQuery;
 
 MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
+  resize(1000, 700);
 
   settings = new QSettings("settings.ini", QSettings::IniFormat, this);
 
@@ -23,6 +24,9 @@ MainWindow::MainWindow() {
                                 QDockWidget::DockWidgetFloatable);
   queryTextDock->setFeatures(QDockWidget::DockWidgetMovable |
                              QDockWidget::DockWidgetFloatable);
+
+  queryTextDock->setMaximumHeight(150);
+  searchResultDock->setMinimumWidth(380);
 
   searchResults = new QTableView(searchResultDock);
   queryWidget = new QueryWidget(queryTextDock);

@@ -1,5 +1,4 @@
 List of tasks to accomplish:
-	* If a matcher expression does not contains bind, automatically bind the top level bindable matcher's result.
 	* Persistent catalogue of Queries with descriptions.
 	* Multithread parsing.
 	* Context dependent autocompletition in Query language.
@@ -12,6 +11,5 @@ List of tasks to accomplish:
 	* Remove using directives where it makes sense.
 	* Add feature: CompilationDatabase::autoDetectFromDirectory and CompilationDatabase::autoDetectFromSource
 	* Do not try to execute the query if empty string is inside the query text.
-	* Add proper size hints and default sizes to the GUI.
 	* Add screenshots to the Readme.md
 	* "Incremential" reparse of projects.
