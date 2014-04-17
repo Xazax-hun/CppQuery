@@ -1,5 +1,7 @@
 List of tasks to accomplish:
-	* Persistent catalogue of Queries with descriptions.
+	* Possibility to add new querys into the catalogue with the gui.
+	* Button to save a query to the catalogue.
+	* Double clicking on a query in the catalogue should insert the query into the query text box.
 	* Multithread parsing.
 	* Context dependent autocompletition in Query language.
 	* Do not execute queries with semantic errors, underline the wrong parts.

@@ -109,7 +109,9 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CPPQUERY_LD_FLAGS}")
 # Configuration file
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings/settings.ini
                ${PROJECT_BINARY_DIR}/settings.ini COPYONLY)
-set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/settings.ini")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/settings/catalog.txt
+               ${PROJECT_BINARY_DIR}/catalog.txt COPYONLY)
+set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINARY_DIR}/settings.ini;${PROJECT_BINARY_DIR}/catalog.txt")
 
 # Main executable
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)

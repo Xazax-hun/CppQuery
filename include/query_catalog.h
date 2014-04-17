@@ -7,7 +7,8 @@
 namespace CppQuery {
 
 struct CatalogEntry {
-  std::string name, description, query;
+  CatalogEntry() {}
+  std::string name = "", description = "", query = "";
 };
 
 class QueryCatalogParser {

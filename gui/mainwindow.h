@@ -16,6 +16,7 @@ namespace CppQuery {
 class Session;
 class QueryWidget;
 class CodeViewArea;
+class QueryCatalogWindow;
 
 /// \brief Worker thread that parses the C++ files.
 ///
@@ -94,15 +95,20 @@ private:
   /// Handle parsing failures
   void onParseFail(const QString reason);
 
+  /// Open the query catalog 
+  void openQueryCatalog();
+
   QTableView *searchResults;
 
   CodeViewArea *resultText;
   QueryWidget *queryWidget;
+  QueryCatalogWindow *catalogWidget;
 
   QMenu *fileMenu;
   QMenu *helpMenu;
 
   QAction *openAct;
+  QAction *openQueryCatalogAct;
   QAction *exitAct;
 
   QAction *matcherHelpAct;

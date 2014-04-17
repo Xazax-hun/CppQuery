@@ -7,6 +7,8 @@
 
 #include "query_widget.h"
 #include "codeview_widget.h"
+#include "querycatalog_window.h"
+
 #include "session.h"
 
 using namespace CppQuery;
@@ -15,6 +17,7 @@ MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
   resize(1000, 700);
 
+  catalogWidget = nullptr;
   settings = new QSettings("settings.ini", QSettings::IniFormat, this);
 
   QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
@@ -99,6 +102,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::createMenuBar() {
   openAct = new QAction(tr("&Open..."), this);
+  openQueryCatalogAct = new QAction(tr("Open query &catalog"), this);
   exitAct = new QAction(tr("E&xit"), this);
   matcherHelpAct = new QAction(tr("Matcher reference"), this);
   aboutAct = new QAction(tr("About"), this);
@@ -110,6 +114,8 @@ void MainWindow::createMenuBar() {
   exitAct->setShortcuts(QKeySequence::Quit);
 
   connect(openAct, &QAction::triggered, this, &MainWindow::open);
+  connect(openQueryCatalogAct, &QAction::triggered, this,
+          &MainWindow::openQueryCatalog);
   connect(exitAct, &QAction::triggered, this, &MainWindow::close);
   connect(matcherHelpAct, &QAction::triggered, this,
           &MainWindow::openMatcherReference);
@@ -120,6 +126,7 @@ void MainWindow::createMenuBar() {
   helpMenu = menuBar()->addMenu(tr("&Help"));
 
   fileMenu->addAction(openAct);
+  fileMenu->addAction(openQueryCatalogAct);
   fileMenu->addAction(exitAct);
 
   helpMenu->addAction(matcherHelpAct);
@@ -127,9 +134,16 @@ void MainWindow::createMenuBar() {
   helpMenu->addAction(aboutQtAct);
 }
 
+void MainWindow::openQueryCatalog() {
+  delete catalogWidget;
+  catalogWidget = new QueryCatalogWindow(
+      settings->value("settings/catalog").toString().toStdString(), this);
+  catalogWidget->show();
+}
+
 void MainWindow::onParseFail(const QString reason) {
-  QMessageBox::critical(this, tr("Error"), tr("Unable to parse C++ code:\n") +
-                                               reason);
+  QMessageBox::critical(this, tr("Error"),
+                        tr("Unable to parse C++ code:\n") + reason);
   session.reset(nullptr);
 }
 

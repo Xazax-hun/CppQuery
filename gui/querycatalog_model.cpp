@@ -30,6 +30,9 @@ int QueryCatalogModel::columnCount(const QModelIndex &parent) const {
 }
 
 QVariant QueryCatalogModel::data(const QModelIndex &index, int role) const {
+  if (role != Qt::DisplayRole && role != Qt::EditRole)
+    return QVariant();
+
   std::string data;
   switch (index.column()) {
   case 0:
@@ -48,6 +51,13 @@ QVariant QueryCatalogModel::data(const QModelIndex &index, int role) const {
 
 QVariant QueryCatalogModel::headerData(int section, Qt::Orientation orientation,
                                        int role) const {
+
+  if (role != Qt::DisplayRole)
+    return QVariant();
+
+  if (orientation == Qt::Vertical)
+    return QVariant();
+
   switch (section) {
   case 0:
     return QString(tr("Name"));
@@ -57,7 +67,7 @@ QVariant QueryCatalogModel::headerData(int section, Qt::Orientation orientation,
     return QString(tr("Query"));
   }
 
-  return QString("");
+  return QVariant();
 }
 
 bool QueryCatalogModel::setData(const QModelIndex &index, const QVariant &value,
@@ -78,5 +88,17 @@ bool QueryCatalogModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 Qt::ItemFlags QueryCatalogModel::flags(const QModelIndex &index) const {
-  return Qt::ItemIsEditable;
+  return Qt::ItemIsEditable | Qt::ItemIsEnabled;
+}
+
+bool QueryCatalogModel::insertRows(int row, int count,
+                                   const QModelIndex &parent) {
+  entries.insert(entries.begin() + row, count, CatalogEntry{});
+  return true;
+}
+
+bool QueryCatalogModel::removeRows(int row, int count,
+                                   const QModelIndex &parent) {
+  entries.erase(entries.begin() + row, entries.begin() + row + count);
+  return true;
 }
