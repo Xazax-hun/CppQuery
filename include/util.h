@@ -15,6 +15,7 @@ public:
 
   /// Make the interface of the pointer accessible.
   T *operator->() { return ptr; }
+  const T *operator->() const { return ptr; }
 
   /// Make it possible to use the pointer as boolean expression
   operator bool() { return ptr; }
