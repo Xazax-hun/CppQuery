@@ -93,12 +93,16 @@ Qt::ItemFlags QueryCatalogModel::flags(const QModelIndex &index) const {
 
 bool QueryCatalogModel::insertRows(int row, int count,
                                    const QModelIndex &parent) {
+  beginInsertRows(parent, row, row + count - 1);
   entries.insert(entries.begin() + row, count, CatalogEntry{});
+  endInsertRows();
   return true;
 }
 
 bool QueryCatalogModel::removeRows(int row, int count,
                                    const QModelIndex &parent) {
+  beginRemoveRows(parent, row, row + count - 1);
   entries.erase(entries.begin() + row, entries.begin() + row + count);
+  endRemoveRows();
   return true;
 }

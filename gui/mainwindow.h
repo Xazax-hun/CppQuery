@@ -72,6 +72,8 @@ public slots:
   /// query. If the query fails, it will show an error message.
   void executeQuery(const std::string &query);
 
+  /// Save a query to the query catalog.
+  void saveQuery(const std::string &query);
 
   /// \brief Open a location found by a query.
   ///
@@ -102,7 +104,7 @@ private:
 
   CodeViewArea *resultText;
   QueryWidget *queryWidget;
-  QueryCatalogWindow *catalogWidget;
+  QueryCatalogWindow *catalogWindow;
 
   QMenu *fileMenu;
   QMenu *helpMenu;

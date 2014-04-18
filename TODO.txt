@@ -1,6 +1,6 @@
 List of tasks to accomplish:
-	* Possibility to add new querys into the catalogue with the gui.
-	* Button to save a query to the catalogue.
+	* Export search results to a text file.
+	* Filter search results based on path prefix.
 	* Double clicking on a query in the catalogue should insert the query into the query text box.
 	* Multithread parsing.
 	* Context dependent autocompletition in Query language.

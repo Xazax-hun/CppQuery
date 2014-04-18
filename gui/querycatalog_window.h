@@ -13,6 +13,8 @@ public:
   QueryCatalogWindow(const std::string &file, QWidget *parent);
   ~QueryCatalogWindow();
 
+  void addQuery(const std::string& query);
+
 private:
   QTableView *queryTable;
 };

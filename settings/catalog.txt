@@ -1,1 +1,1 @@
-Derived Classes|Finds all class that were derived from a given class|isDerivedFrom(hasName("X"))
+Derived Classes|Finds all class that were derived from a given class|recordDecl(isDerivedFrom(hasName("X"))).bind("id")

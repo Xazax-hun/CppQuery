@@ -20,13 +20,16 @@ public:
 
 public slots:
   void executeButtonPressed();
+  void saveButtonPressed();
 
 signals:
   void executeQuery(const std::string &query);
+  void saveQuery(const std::string &query);
 
 private:
   AutoCompleterTextEdit *queryText;
   QPushButton *execute;
+  QPushButton *save;
   QueryHighlighter *highlighter;
 };
 }

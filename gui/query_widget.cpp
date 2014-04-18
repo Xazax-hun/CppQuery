@@ -6,20 +6,26 @@
 using namespace CppQuery;
 
 QueryWidget::QueryWidget(QWidget *parent) : QWidget(parent) {
-  QVBoxLayout *layout = new QVBoxLayout;
+  QVBoxLayout *vlayout = new QVBoxLayout;
+  QHBoxLayout *hlayout = new QHBoxLayout;
 
   queryText = new AutoCompleterTextEdit;
   execute = new QPushButton(tr("Execute!"));
+  save =  new QPushButton(tr("Save to catalog"));
 
-  layout->addWidget(queryText);
-  layout->addWidget(execute);
+  hlayout->addWidget(save);
+  hlayout->addWidget(execute);
+  vlayout->addWidget(queryText);
+  vlayout->addLayout(hlayout);
 
-  setLayout(layout);
+  setLayout(vlayout);
 
   highlighter = new QueryHighlighter(queryText->document());
 
   connect(execute, &QPushButton::clicked, this,
           &QueryWidget::executeButtonPressed);
+  connect(save, &QPushButton::clicked, this,
+          &QueryWidget::saveButtonPressed);
 
   // Autocompletion support
   QStringList matchers;
@@ -36,4 +42,10 @@ void QueryWidget::executeButtonPressed() {
   std::string query = queryText->toPlainText().toStdString();
 
   emit executeQuery(query);
+}
+
+void QueryWidget::saveButtonPressed() {
+  std::string query = queryText->toPlainText().toStdString();
+
+  emit saveQuery(query);
 }

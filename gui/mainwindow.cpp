@@ -17,7 +17,7 @@ MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
   resize(1000, 700);
 
-  catalogWidget = nullptr;
+  catalogWindow = nullptr;
   settings = new QSettings("settings.ini", QSettings::IniFormat, this);
 
   QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
@@ -73,6 +73,8 @@ MainWindow::MainWindow() {
 
   connect(queryWidget, &QueryWidget::executeQuery, this,
           &MainWindow::executeQuery);
+  connect(queryWidget, &QueryWidget::saveQuery, this,
+          &MainWindow::saveQuery);
   connect(searchResults, &QTableView::doubleClicked, this,
           &MainWindow::openResult);
 
@@ -102,7 +104,7 @@ MainWindow::~MainWindow() {
 
 void MainWindow::createMenuBar() {
   openAct = new QAction(tr("&Open..."), this);
-  openQueryCatalogAct = new QAction(tr("Open query &catalog"), this);
+  openQueryCatalogAct = new QAction(tr("Query &catalog"), this);
   exitAct = new QAction(tr("E&xit"), this);
   matcherHelpAct = new QAction(tr("Matcher reference"), this);
   aboutAct = new QAction(tr("About"), this);
@@ -135,10 +137,18 @@ void MainWindow::createMenuBar() {
 }
 
 void MainWindow::openQueryCatalog() {
-  delete catalogWidget;
-  catalogWidget = new QueryCatalogWindow(
+  delete catalogWindow;
+  catalogWindow = new QueryCatalogWindow(
       settings->value("settings/catalog").toString().toStdString(), this);
-  catalogWidget->show();
+  catalogWindow->show();
+}
+
+void MainWindow::saveQuery(const std::string& query) {
+  delete catalogWindow;
+  catalogWindow = new QueryCatalogWindow(
+      settings->value("settings/catalog").toString().toStdString(), this);
+  catalogWindow->addQuery(query);
+  catalogWindow->show();
 }
 
 void MainWindow::onParseFail(const QString reason) {
