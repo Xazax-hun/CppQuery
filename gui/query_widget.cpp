@@ -38,6 +38,10 @@ QueryWidget::QueryWidget(QWidget *parent) : QWidget(parent) {
   queryText->setCompleter(completer);
 }
 
+void QueryWidget::setQueryText(const std::string &query) {
+  queryText->setPlainText(QString::fromStdString(query));
+}
+
 void QueryWidget::executeButtonPressed() {
   std::string query = queryText->toPlainText().toStdString();
 

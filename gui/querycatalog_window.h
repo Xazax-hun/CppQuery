@@ -17,6 +17,9 @@ public:
 
   void addQuery(const std::string& query);
 
+signals:
+  void doubleClicked(const QModelIndex &index);
+
 private:
   QTableView *queryTable;
 };

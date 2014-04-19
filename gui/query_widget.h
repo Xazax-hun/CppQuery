@@ -21,6 +21,7 @@ public:
 public slots:
   void executeButtonPressed();
   void saveButtonPressed();
+  void setQueryText(const std::string &query);
 
 signals:
   void executeQuery(const std::string &query);

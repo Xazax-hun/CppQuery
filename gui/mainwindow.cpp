@@ -77,6 +77,11 @@ MainWindow::MainWindow() {
           &MainWindow::saveQuery);
   connect(searchResults, &QTableView::doubleClicked, this,
           &MainWindow::openResult);
+  connect(catalogWindow, &QueryCatalogWindow::doubleClicked,
+          [this](const QModelIndex &index) {
+    QModelIndex realIndex(index.sibling(index.row(), 2));
+    queryWidget->setQueryText(realIndex.data().toString().toStdString());
+  });
 
   // Connect the options to the worker thread;
   connect(parser, &ParserWorker::filesDone,

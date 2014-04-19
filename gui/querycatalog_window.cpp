@@ -5,10 +5,16 @@
 using namespace CppQuery;
 
 QueryCatalogWindow::QueryCatalogWindow(QWidget *parent) : QMainWindow(parent) {
-
   resize(800, 600);
 
   queryTable = new QTableView(this);
+  queryTable->setEditTriggers(QAbstractItemView::SelectedClicked |
+                              QAbstractItemView::AnyKeyPressed);
+
+  connect(queryTable, &QAbstractItemView::doubleClicked,
+          [this](const QModelIndex &index) {
+    emit doubleClicked(index); hide();
+  });
 }
 
 void QueryCatalogWindow::readFromFile(const std::string &file) {
