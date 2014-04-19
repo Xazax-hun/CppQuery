@@ -17,7 +17,7 @@ MainWindow::MainWindow() {
   setWindowTitle(tr("CppQuery"));
   resize(1000, 700);
 
-  catalogWindow = nullptr;
+  catalogWindow = new QueryCatalogWindow(this);
   settings = new QSettings("settings.ini", QSettings::IniFormat, this);
 
   QDockWidget *searchResultDock = new QDockWidget(tr("Search Results"), this);
@@ -137,16 +137,14 @@ void MainWindow::createMenuBar() {
 }
 
 void MainWindow::openQueryCatalog() {
-  delete catalogWindow;
-  catalogWindow = new QueryCatalogWindow(
-      settings->value("settings/catalog").toString().toStdString(), this);
+  catalogWindow->readFromFile(
+      settings->value("settings/catalog").toString().toStdString());
   catalogWindow->show();
 }
 
 void MainWindow::saveQuery(const std::string& query) {
-  delete catalogWindow;
-  catalogWindow = new QueryCatalogWindow(
-      settings->value("settings/catalog").toString().toStdString(), this);
+  catalogWindow->readFromFile(
+      settings->value("settings/catalog").toString().toStdString());
   catalogWindow->addQuery(query);
   catalogWindow->show();
 }

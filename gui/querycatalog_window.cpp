@@ -4,16 +4,19 @@
 
 using namespace CppQuery;
 
-QueryCatalogWindow::QueryCatalogWindow(const std::string &file,
-                                       QWidget *parent)
-    : QMainWindow(parent) {
+QueryCatalogWindow::QueryCatalogWindow(QWidget *parent) : QMainWindow(parent) {
 
   resize(800, 600);
 
   queryTable = new QTableView(this);
+}
+
+void QueryCatalogWindow::readFromFile(const std::string &file) {
+  delete queryTable->model();
   queryTable->setModel(new QueryCatalogModel(file));
   setCentralWidget(queryTable);
   queryTable->resizeColumnsToContents();
+
 }
 
 QueryCatalogWindow::~QueryCatalogWindow() { delete queryTable->model(); }

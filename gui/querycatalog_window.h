@@ -10,8 +10,10 @@ class QueryCatalogWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  QueryCatalogWindow(const std::string &file, QWidget *parent);
+  QueryCatalogWindow(QWidget *parent);
   ~QueryCatalogWindow();
+
+  void readFromFile(const std::string &file);
 
   void addQuery(const std::string& query);
 
