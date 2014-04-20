@@ -103,6 +103,9 @@ private:
   /// Handle parsing failures
   void onParseFail(const QString reason);
 
+  /// Handle parsing done event
+  void onParseDone();
+
   /// Open the query catalog 
   void openQueryCatalog();
 

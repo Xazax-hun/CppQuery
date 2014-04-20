@@ -87,8 +87,9 @@ MainWindow::MainWindow() {
   connect(parser, &ParserWorker::filesDone,
           [this](int i) { parseProgress->setValue(i); });
 
-  connect(parser, &ParserWorker::parseDone,
-          [this]() { parseProgress->hide(); });
+  connect(parser, &ParserWorker::parseDone, this, &MainWindow::onParseDone,
+          Qt::QueuedConnection);
+
 
   connect(parser, &ParserWorker::parseFail, this, &MainWindow::onParseFail,
           Qt::QueuedConnection);
@@ -160,10 +161,16 @@ void MainWindow::saveQuery(const std::string& query) {
   catalogWindow->show();
 }
 
+void MainWindow::onParseDone() {
+  parseProgress->hide();
+  statusBar()->showMessage(tr("Parsing done..."));
+}
+
 void MainWindow::onParseFail(const QString reason) {
   QMessageBox::critical(this, tr("Error"),
                         tr("Unable to parse C++ code:\n") + reason);
   session.reset(nullptr);
+  statusBar()->showMessage(tr("Parsing is failed..."));
 }
 
 void MainWindow::open() {
