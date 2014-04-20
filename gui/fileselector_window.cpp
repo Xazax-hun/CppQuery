@@ -25,7 +25,7 @@ FileSelectorDialog::FileSelectorDialog(const QStringList &list, QWidget *parent)
   for (int i = 0; i < list.size(); ++i) {
     QListWidgetItem *item = listWidget->item(i);
     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Unchecked);
+    item->setCheckState(Qt::Checked);
   }
 
   connect(selectAllButton, &QPushButton::clicked, this,
