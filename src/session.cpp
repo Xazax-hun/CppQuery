@@ -1,5 +1,6 @@
 #include "session.h"
 
+#include <iostream>
 #include <fstream>
 #include <tuple>
 
@@ -39,14 +40,19 @@ private:
 
 class ASTBuilderAction : public ToolAction {
 public:
-  ASTBuilderAction(std::vector<ASTUnit *> &ASTlist,
-                   const std::function<bool(const std::string &)> &onTUend)
-      : ASTlist(ASTlist), onTUend(onTUend) {
+  ASTBuilderAction(
+      std::vector<ASTUnit *> &ASTlist,
+      const std::function<bool(const std::string &)> &onTUbegin,
+      const std::function<bool(const std::string &)> &onTUend)
+      : ASTlist(ASTlist), onTUbegin(onTUbegin), onTUend(onTUend) {
     errorNum = 0;
   }
 
   bool runInvocation(CompilerInvocation *invocation, FileManager *files,
                      DiagnosticConsumer *diagConsumer) {
+    if (!onTUbegin(invocation->getFrontendOpts().Inputs[0].getFile().str()))
+      return true;
+
     TextDiagnosticBuffer diag;
     ASTUnit *AST = ASTUnit::LoadFromCompilerInvocation(
         invocation, CompilerInstance::createDiagnostics(
@@ -80,6 +86,7 @@ private:
   unsigned errorNum;
   std::vector<std::string> errors;
   std::vector<ASTUnit *> &ASTlist;
+  const std::function<bool(const std::string &)> &onTUbegin;
   const std::function<bool(const std::string &)> &onTUend;
 };
 }
@@ -122,8 +129,9 @@ Session::~Session() {
 }
 
 void
-Session::parseFiles(const std::function<bool(const std::string &)> &onTUend) {
-  ASTBuilderAction action(ASTlist, onTUend);
+Session::parseFiles(const std::function<bool(const std::string &)> &onTUbegin,
+                    const std::function<bool(const std::string &)> &onTUend) {
+  ASTBuilderAction action(ASTlist, onTUbegin, onTUend);
 
   if (tool->run(&action) || action.errBegin() != action.errEnd()) {
     std::string errors;

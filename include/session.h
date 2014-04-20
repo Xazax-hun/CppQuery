@@ -88,7 +88,8 @@ public:
   ~Session();
 
   unsigned getFileCount() { return files.size(); }
-  void parseFiles(const std::function<bool(const std::string &)> &onTUend);
+  void parseFiles(const std::function<bool(const std::string &)> &onTUbegin,
+                  const std::function<bool(const std::string &)> &onTUend);
 
   void runQuery(const std::string &query);
 

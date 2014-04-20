@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 
-#include <string>
-
 #include <QSettings>
 #include <QDesktopServices>
 #include <QJsonDocument>
@@ -181,10 +179,6 @@ void MainWindow::open() {
         fileName,
         settings->value("clang/resource-dir").toString().toStdString()));
 
-    parseProgress->show();
-    parseProgress->setMaximum(session->getFileCount());
-    parseProgress->setValue(0);
-
     QStringList sourceFiles;
 
     QFile file(fileName.c_str());
@@ -207,6 +201,10 @@ void MainWindow::open() {
 
     FileSelectorDialog d(sourceFiles, this);
     d.exec();
+
+    parseProgress->show();
+    parseProgress->setMaximum(d.getSelectedFiles().size());
+    parseProgress->setValue(0);
 
     parser->setSession(session.get());
     parser->setSources(d.getSelectedFiles());
@@ -328,8 +326,9 @@ ParserWorker::~ParserWorker() {}
 void ParserWorker::setSession(Session *session) { this->session = session; }
 
 void ParserWorker::setSources(const QStringList &sourceFiles) {
-  for (const QString &str : sourceFiles)
-    sources.insert(str.toStdString());
+  for (const QString &str : sourceFiles) {
+  	sources.insert(str.toStdString());
+  }
 }
 
 void ParserWorker::run() {
@@ -338,9 +337,12 @@ void ParserWorker::run() {
 
   try {
     int i = 0;
-    session->parseFiles([&i, this](const std::string & TUName)->bool {
+    session->parseFiles([this](const std::string &TUName) {
+                          return sources.count(TUName);
+                        },
+    [&i, this ](const std::string & TUName)->bool {
       emitFilesDone(++i);
-      return sources.count(TUName);
+      return true;
     });
   }
   catch (ParseError &e) {
