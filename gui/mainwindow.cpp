@@ -338,7 +338,7 @@ void ParserWorker::run() {
 
   try {
     int i = 0;
-    session->parseFiles([&i, this ](const std::string & TUName)->bool {
+    session->parseFiles([&i, this](const std::string & TUName)->bool {
       emitFilesDone(++i);
       return sources.count(TUName);
     });

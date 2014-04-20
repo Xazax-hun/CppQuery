@@ -4,6 +4,7 @@ using namespace CppQuery;
 
 FileSelectorDialog::FileSelectorDialog(const QStringList &list, QWidget *parent)
     : QDialog(parent) {
+  resize(800, 600);
   setModal(true);
   QVBoxLayout *layout = new QVBoxLayout(this);
 
