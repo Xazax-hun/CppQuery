@@ -4,10 +4,15 @@
 
 using namespace CppQuery;
 
-QueryCatalogWindow::QueryCatalogWindow(QWidget *parent) : QMainWindow(parent) {
+QueryCatalogWindow::QueryCatalogWindow(QWidget *parent) : QDialog(parent) {
   resize(800, 600);
+  setModal(true);
 
   queryTable = new QTableView(this);
+  QHBoxLayout *layout = new QHBoxLayout(this);
+  layout->addWidget(queryTable);
+  setLayout(layout);
+
   queryTable->setEditTriggers(QAbstractItemView::SelectedClicked |
                               QAbstractItemView::AnyKeyPressed);
 
@@ -20,7 +25,6 @@ QueryCatalogWindow::QueryCatalogWindow(QWidget *parent) : QMainWindow(parent) {
 void QueryCatalogWindow::readFromFile(const std::string &file) {
   delete queryTable->model();
   queryTable->setModel(new QueryCatalogModel(file));
-  setCentralWidget(queryTable);
   queryTable->resizeColumnsToContents();
 
 }

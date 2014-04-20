@@ -6,7 +6,7 @@
 
 namespace CppQuery {
 
-class QueryCatalogWindow : public QMainWindow {
+class QueryCatalogWindow : public QDialog {
   Q_OBJECT
 
 public:
