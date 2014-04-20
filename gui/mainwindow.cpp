@@ -9,6 +9,7 @@
 #include "query_widget.h"
 #include "codeview_widget.h"
 #include "querycatalog_window.h"
+#include "fileselector_window.h"
 
 #include "session.h"
 
@@ -204,7 +205,11 @@ void MainWindow::open() {
       }
     }
 
+    FileSelectorDialog d(sourceFiles, this);
+    d.exec();
+
     parser->setSession(session.get());
+    parser->setSources(d.getSelectedFiles());
     parser->start();
 
     // Remove the results of the session that was open earlier
@@ -322,6 +327,11 @@ ParserWorker::~ParserWorker() {}
 
 void ParserWorker::setSession(Session *session) { this->session = session; }
 
+void ParserWorker::setSources(const QStringList &sourceFiles) {
+  for (const QString &str : sourceFiles)
+    sources.insert(str.toStdString());
+}
+
 void ParserWorker::run() {
   if (!session)
     return;
@@ -330,7 +340,7 @@ void ParserWorker::run() {
     int i = 0;
     session->parseFiles([&i, this ](const std::string & TUName)->bool {
       emitFilesDone(++i);
-      return true;
+      return sources.count(TUName);
     });
   }
   catch (ParseError &e) {

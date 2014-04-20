@@ -1,9 +1,12 @@
 #ifndef __MAINWINDOW_H__
 #define __MAINWINDOW_H__
 
+#include <set>
+#include <string>
 #include <memory>
 #include <utility>
 
+#include <QStringList>
 #include <QtWidgets>
 #include <QThread>
 
@@ -42,6 +45,8 @@ public:
   /// the session is nullptr, the thread will not parse anything.
   void setSession(Session *session);
 
+  void setSources(const QStringList &sourceFiles);
+
 protected:
   void run() override;
 
@@ -49,6 +54,7 @@ private:
   void emitFilesDone(int i) { emit filesDone(i); }
 
   Session *session;
+  std::set<std::string> sources;
 };
 
 /// \brief The main window of CppQuery.
