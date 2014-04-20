@@ -109,7 +109,8 @@ MainWindow::~MainWindow() {
 
 void MainWindow::createMenuBar() {
   openAct = new QAction(tr("&Open..."), this);
-  openQueryCatalogAct = new QAction(tr("Query &catalog"), this);
+  openQueryCatalogAct = new QAction(tr("Query catalog"), this);
+  exportResultsAct = new QAction(tr("Export results..."), this);
   exitAct = new QAction(tr("E&xit"), this);
   matcherHelpAct = new QAction(tr("Matcher reference"), this);
   aboutAct = new QAction(tr("About"), this);
@@ -118,11 +119,15 @@ void MainWindow::createMenuBar() {
   openAct->setShortcuts(QKeySequence::Open);
   openAct->setStatusTip(tr("Open a JSON compilation database."));
 
+  exportResultsAct->setShortcuts(QKeySequence::SaveAs);
+
   exitAct->setShortcuts(QKeySequence::Quit);
 
   connect(openAct, &QAction::triggered, this, &MainWindow::open);
   connect(openQueryCatalogAct, &QAction::triggered, this,
           &MainWindow::openQueryCatalog);
+  connect(exportResultsAct, &QAction::triggered, this,
+          &MainWindow::exportQueryResults);
   connect(exitAct, &QAction::triggered, this, &MainWindow::close);
   connect(matcherHelpAct, &QAction::triggered, this,
           &MainWindow::openMatcherReference);
@@ -134,6 +139,7 @@ void MainWindow::createMenuBar() {
 
   fileMenu->addAction(openAct);
   fileMenu->addAction(openQueryCatalogAct);
+  fileMenu->addAction(exportResultsAct);
   fileMenu->addAction(exitAct);
 
   helpMenu->addAction(matcherHelpAct);
@@ -191,6 +197,19 @@ void MainWindow::open() {
                               QString::fromStdString(e.getReason()));
     session.reset(nullptr);
   }
+}
+
+void MainWindow::exportQueryResults() {
+  std::string fileName =
+      QFileDialog::getSaveFileName(this, tr("Export query results"), "",
+                                   tr("Text files (*.txt)")).toStdString();
+  if (fileName.empty())
+    return;
+
+  // TODO: consider filtering
+  session->exportMatches(fileName);
+
+  statusBar()->showMessage(tr("Results are exported..."));
 }
 
 void MainWindow::about() {

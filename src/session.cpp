@@ -1,6 +1,8 @@
 #include "session.h"
 
+#include <fstream>
 #include <tuple>
+
 #include <cassert>
 
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -84,6 +86,12 @@ bool CppQuery::operator<(const Match &lhs, const Match &rhs) {
                   lhs.endLine,
                   lhs.endCol) < std::tie(rhs.fileName, rhs.id, rhs.startLine,
                                          rhs.startCol, rhs.endLine, rhs.endCol);
+}
+
+std::ostream &CppQuery::operator<<(std::ostream &s, const Match &m) {
+  s << m.fileName << "(" << m.id << "):" << m.startLine << "," << m.startCol
+    << ":" << m.endLine << "," << m.endCol << std::endl;
+  return s;
 }
 
 Session::Session(const std::string &databasePath,
@@ -201,3 +209,16 @@ void Session::runQuery(const std::string &query) {
 }
 
 const std::set<Match> &Session::getMatches() const { return foundMatches; }
+
+bool Session::exportMatches(const std::string &fileName) {
+  std::ofstream output(fileName);
+
+  if (!output)
+    return false;
+
+  for (const Match &m : foundMatches) {
+    output << m;
+  }
+
+  return true;
+}

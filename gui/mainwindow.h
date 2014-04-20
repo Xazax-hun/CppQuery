@@ -100,6 +100,9 @@ private:
   /// Open the query catalog 
   void openQueryCatalog();
 
+  /// Export query results to a text file format
+  void exportQueryResults();
+
   QTableView *searchResults;
 
   CodeViewArea *resultText;
@@ -111,6 +114,7 @@ private:
 
   QAction *openAct;
   QAction *openQueryCatalogAct;
+  QAction *exportResultsAct;
   QAction *exitAct;
 
   QAction *matcherHelpAct;

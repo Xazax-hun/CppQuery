@@ -8,6 +8,7 @@
 #include <utility>
 #include <functional>
 #include <exception>
+#include <ostream>
 
 #include "clang/Basic/SourceLocation.h"
 
@@ -72,6 +73,7 @@ struct Match {
 };
 
 bool operator<(const Match &, const Match &);
+std::ostream& operator<<(std::ostream& s, const Match& m);
 
 /// \brief Storage and execution of query related parts.
 ///
@@ -89,6 +91,8 @@ public:
   void parseFiles(const std::function<bool(const std::string &)> &onTUend);
 
   void runQuery(const std::string &query);
+
+  bool exportMatches(const std::string &fileName);
 
   const std::set<Match> &getMatches() const;
 
