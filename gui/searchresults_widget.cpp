@@ -10,7 +10,7 @@ SearchResults::SearchResults(QWidget *parent) : QWidget(parent) {
   QVBoxLayout *layout = new QVBoxLayout(this);
   layout->addWidget(searchResults);
 
-  QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+  QHBoxLayout *buttonLayout = new QHBoxLayout();
 
   layout->addLayout(buttonLayout);
 
@@ -24,7 +24,13 @@ SearchResults::SearchResults(QWidget *parent) : QWidget(parent) {
           << tr("End Line") << tr("End Col");
   model->setHorizontalHeaderLabels(headers);
 
-  searchResults->setModel(model);
+  proxyModel = new QSortFilterProxyModel(this);
+  proxyModel->setSourceModel(model);
+  proxyModel->setFilterKeyColumn(1);
+  proxyModel->setFilterRegExp(
+      QRegExp("*", Qt::CaseInsensitive, QRegExp::Wildcard));
+
+  searchResults->setModel(proxyModel);
   searchResults->setGridStyle(Qt::NoPen);
   searchResults->setAlternatingRowColors(true);
   searchResults->verticalHeader()->hide();
@@ -37,10 +43,26 @@ SearchResults::SearchResults(QWidget *parent) : QWidget(parent) {
 
   connect(searchResults, &QTableView::doubleClicked,
           [this](const QModelIndex &index) { emit doubleClicked(index); });
+
+  connect(filterButton, &QPushButton::clicked, this,
+          &SearchResults::filterResults);
+  connect(filterText, &QLineEdit::returnPressed, this,
+          &SearchResults::filterResults);
 }
 
 QAbstractItemModel *SearchResults::model() { return searchResults->model(); }
 
 void SearchResults::setModel(QAbstractItemModel *model) {
   searchResults->setModel(model);
+}
+
+void SearchResults::filterResults() {
+  QString text = filterText->text();
+  if (text != "") {
+    proxyModel->setFilterRegExp(
+        QRegExp(text, Qt::CaseInsensitive, QRegExp::Wildcard));
+  } else {
+    proxyModel->setFilterRegExp(
+        QRegExp("*", Qt::CaseInsensitive, QRegExp::Wildcard));
+  }
 }
