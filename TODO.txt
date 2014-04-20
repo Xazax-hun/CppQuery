@@ -1,4 +1,7 @@
 List of tasks to accomplish:
+	* Drag and drop compilation databases.
+	* Open search results in text editor.
+	* Load search results from text files.
 	* Filter search results based on path prefix.
 	* Multithread parsing.
 	* Context dependent autocompletition in Query language.
@@ -7,9 +10,7 @@ List of tasks to accomplish:
 	* Add user guide. (Including how to make CMake to produce compilation database)
 	* Add references to Bear as a tool to create compilation databases.
 	* Add possibility to filter compilation databases for path.
-	* Reduce the size of TUs (remove QTWidgets include from headers).
 	* Remove using directives where it makes sense.
-	* Add feature: CompilationDatabase::autoDetectFromDirectory and CompilationDatabase::autoDetectFromSource
 	* Do not try to execute the query if empty string is inside the query text.
 	* Add screenshots to the Readme.md
 	* "Incremential" reparse of projects.

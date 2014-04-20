@@ -4,6 +4,7 @@
 
 #include <QSettings>
 #include <QDesktopServices>
+#include <QJsonDocument>
 
 #include "query_widget.h"
 #include "codeview_widget.h"
@@ -182,6 +183,26 @@ void MainWindow::open() {
     parseProgress->show();
     parseProgress->setMaximum(session->getFileCount());
     parseProgress->setValue(0);
+
+    QStringList sourceFiles;
+
+    QFile file(fileName.c_str());
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QJsonParseError error;
+    QJsonDocument document =
+        QJsonDocument::fromJson(file.readAll(), &error);
+    file.close();
+
+    if (error.error == QJsonParseError::NoError && document.isArray()) {
+      QJsonArray array = document.array();
+      for (QJsonValue val : array) {
+        if (!val.isObject())
+          continue;
+        QJsonObject obj = val.toObject();
+        QJsonValue fileName = obj.value("file");
+        sourceFiles << fileName.toString();
+      }
+    }
 
     parser->setSession(session.get());
     parser->start();
