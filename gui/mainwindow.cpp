@@ -8,6 +8,7 @@
 #include "codeview_widget.h"
 #include "querycatalog_window.h"
 #include "fileselector_window.h"
+#include "searchresults_widget.h"
 
 #include "session.h"
 
@@ -31,26 +32,8 @@ MainWindow::MainWindow() {
   queryTextDock->setMaximumHeight(150);
   searchResultDock->setMinimumWidth(380);
 
-  searchResults = new QTableView(searchResultDock);
+  searchResults = new SearchResults(searchResultDock);
   queryWidget = new QueryWidget(queryTextDock);
-
-  searchResults->setSelectionMode(QAbstractItemView::NoSelection);
-  QStandardItemModel *model = new QStandardItemModel(0, 6, searchResults);
-  QStringList headers;
-  headers << tr("id") << tr("Filename") << tr("Start Line") << tr("Start Col")
-          << tr("End Line") << tr("End Col");
-  model->setHorizontalHeaderLabels(headers);
-
-  searchResults->setModel(model);
-  searchResults->setGridStyle(Qt::NoPen);
-  searchResults->setAlternatingRowColors(true);
-  searchResults->verticalHeader()->hide();
-  searchResults->setEditTriggers(QAbstractItemView::NoEditTriggers);
-  searchResults->setSelectionMode(QAbstractItemView::NoSelection);
-  searchResults->setDragEnabled(false);
-  searchResults->setTextElideMode(Qt::ElideLeft);
-  searchResults->resizeColumnsToContents();
-  searchResults->horizontalHeader()->setStretchLastSection(true);
 
   searchResultDock->setWidget(searchResults);
   queryTextDock->setWidget(queryWidget);
@@ -75,7 +58,7 @@ MainWindow::MainWindow() {
           &MainWindow::executeQuery);
   connect(queryWidget, &QueryWidget::saveQuery, this,
           &MainWindow::saveQuery);
-  connect(searchResults, &QTableView::doubleClicked, this,
+  connect(searchResults, &SearchResults::doubleClicked, this,
           &MainWindow::openResult);
   connect(catalogWindow, &QueryCatalogWindow::doubleClicked,
           [this](const QModelIndex &index) {

@@ -3,7 +3,7 @@ List of tasks to accomplish:
 	* Open search results in text editor.
 	* Load search results from text files.
 	* Filter search results based on path prefix.
-	* Multithread parsing.
+	* Multithreaded parsing.
 	* Context dependent autocompletition in Query language.
 	* Do not execute queries with semantic errors, underline the wrong parts.
 	* Serialize ASTs, and able to open projects that was already parsed earlier.

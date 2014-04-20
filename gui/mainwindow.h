@@ -20,6 +20,7 @@ class Session;
 class QueryWidget;
 class CodeViewArea;
 class QueryCatalogWindow;
+class SearchResults;
 
 /// \brief Worker thread that parses the C++ files.
 ///
@@ -112,7 +113,7 @@ private:
   /// Export query results to a text file format
   void exportQueryResults();
 
-  QTableView *searchResults;
+  SearchResults *searchResults;
 
   CodeViewArea *resultText;
   QueryWidget *queryWidget;
