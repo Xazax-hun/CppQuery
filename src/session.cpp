@@ -65,6 +65,9 @@ public:
             std::to_string(srcMgr.getSpellingLineNumber(it->first)) + ": " +
             it->second + "\n");
       }
+    } else {
+      AST->setUnsafeToFree(false);
+      delete AST;
     }
 
     return true;
