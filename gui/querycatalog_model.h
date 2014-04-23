@@ -10,6 +10,13 @@
 
 namespace CppQuery {
 
+/// \brief Query Catalog Model class.
+///
+/// This class determines how the entries that are in the Query Catalog should
+/// be displayed and how can the entries be modified. This class also
+/// responsible for adding and removing entries from the Query Catalog. It is
+/// using the QueryCatalogParser class to read and write entries from and to
+/// the Query Catalog.
 class QueryCatalogModel : public QAbstractTableModel {
   Q_OBJECT
 

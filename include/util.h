@@ -15,6 +15,8 @@ public:
 
   /// Make the interface of the pointer accessible.
   T *operator->() { return ptr; }
+
+  /// Make the interface of the pointer accessible through const OwningPtr.
   const T *operator->() const { return ptr; }
 
   /// Make it possible to use the pointer as boolean expression
@@ -32,7 +34,6 @@ public:
 private:
   T *ptr;
 };
-
 
 /// Convenient function to create owning pointers.
 template <typename T> OwningPtr<T> makeOwningPtr(T *ptr) {

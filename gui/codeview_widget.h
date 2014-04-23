@@ -3,8 +3,6 @@
 
 #include <QtWidgets>
 
-// Inspired by QT examples
-
 namespace CppQuery {
 
 class CppHighlighter;
@@ -15,6 +13,7 @@ class LineNumberArea;
 /// This class provides several advanced features over QPlainTextEdit. This
 /// includes syntax highlighting of C/C++ files, highlighting arbitrary area of
 /// the text and displaying line numbers at the right side of the widget.
+/// This class was inspired bz Qt Examples
 class CodeViewArea : public QPlainTextEdit {
   Q_OBJECT
 

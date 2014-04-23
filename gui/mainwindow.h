@@ -46,6 +46,12 @@ public:
   /// the session is nullptr, the thread will not parse anything.
   void setSession(Session *session);
 
+
+  /// \brief Set the source files that are parsed.
+  ///
+  /// The list of source files with full path that should be parsed. All of the
+  /// files should be included in the compilation database of the session as
+  /// well.
   void setSources(const QStringList &sourceFiles);
 
 protected:
@@ -93,6 +99,7 @@ private slots:
   void about();
 
 private:
+  /// Create menu bars for the main window.
   void createMenuBar();
 
   /// Opens the ASTMatcher reference page in a browser.

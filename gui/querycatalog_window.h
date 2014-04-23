@@ -6,6 +6,10 @@
 
 namespace CppQuery {
 
+/// \brief Query Catalog dialog.
+///
+/// This class displays the Query Catalog in a way that is determined by the
+/// QueryCatalogModel class. 
 class QueryCatalogWindow : public QDialog {
   Q_OBJECT
 

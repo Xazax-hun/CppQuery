@@ -72,8 +72,11 @@ struct Match {
   unsigned endLine, endCol;
 };
 
+/// Match objects should be able to be stored in associative containers
 bool operator<(const Match &, const Match &);
-std::ostream& operator<<(std::ostream& s, const Match& m);
+
+/// Match objects can be serialized to text streams
+std::ostream &operator<<(std::ostream &s, const Match &m);
 
 /// \brief Storage and execution of query related parts.
 ///

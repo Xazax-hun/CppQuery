@@ -5,6 +5,10 @@
 
 namespace CppQuery {
 
+/// \brief Search results widget.
+///
+/// This widget is responsible for displaying query results and filtering the
+/// results based on the file path.
 class SearchResults : public QWidget {
   Q_OBJECT
 public:
