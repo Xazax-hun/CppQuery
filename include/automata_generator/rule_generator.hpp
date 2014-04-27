@@ -10,7 +10,7 @@
 #include <boost/function_types/parameter_types.hpp>
 #include <boost/function_types/function_arity.hpp>
 
-#include "boost/mpl/at.hpp"
+#include <boost/mpl/at.hpp>
 
 template <typename T, T *ptr> struct FunctionPointer;
 
