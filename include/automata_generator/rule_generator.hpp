@@ -61,11 +61,11 @@ struct ComposabilityRule<std::tuple<F, FOType, FName>,
   static ComposeResult TryCompose(const std::string &f, const std::string &g,
                                   int parameter = 0) {
     // TODO: support arbitary number of arity
-    const bool composable[5] = { ComposabilityHelper<F, G, 0>::value,
-                                 ComposabilityHelper<F, G, 1>::value,
-                                 ComposabilityHelper<F, G, 2>::value,
-                                 ComposabilityHelper<F, G, 3>::value,
-                                 ComposabilityHelper<F, G, 4>::value };
+    static constexpr bool composable[5] = {
+      ComposabilityHelper<F, G, 0>::value, ComposabilityHelper<F, G, 1>::value,
+      ComposabilityHelper<F, G, 2>::value, ComposabilityHelper<F, G, 3>::value,
+      ComposabilityHelper<F, G, 4>::value
+    };
 
     if (parameter > arity)
       return OutOfArityBounds;
@@ -80,11 +80,11 @@ struct ComposabilityRule<std::tuple<F, FOType, FName>,
   // Gets the runtime name of the inner function G if
   //  F and G are composable (and f is the name of F).
   static std::string GetInnerFunction(const std::string &f, int parameter = 0) {
-    const bool composable[5] = { ComposabilityHelper<F, G, 0>::value,
-                                 ComposabilityHelper<F, G, 1>::value,
-                                 ComposabilityHelper<F, G, 2>::value,
-                                 ComposabilityHelper<F, G, 3>::value,
-                                 ComposabilityHelper<F, G, 4>::value };
+    static constexpr bool composable[5] = {
+      ComposabilityHelper<F, G, 0>::value, ComposabilityHelper<F, G, 1>::value,
+      ComposabilityHelper<F, G, 2>::value, ComposabilityHelper<F, G, 3>::value,
+      ComposabilityHelper<F, G, 4>::value
+    };
 
     if (!FName::Equals(f)) {
       return "";
