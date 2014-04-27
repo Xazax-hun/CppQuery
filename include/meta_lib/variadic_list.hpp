@@ -49,11 +49,18 @@ struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
 };
 
 template <typename... Firsts, typename... Seconds, typename... Thirds,
-          typename... Fourths, typename... Fifths, typename... Rest>
+          typename... Fourths, typename... Fifths, typename... Sixths>
 struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
-              list<Fourths...>, list<Fifths...>, Rest...> {
+              list<Fourths...>, list<Fifths...>, list<Sixths...> > {
+  using type = list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths..., Sixths...>;
+};
+
+template <typename... Firsts, typename... Seconds, typename... Thirds,
+          typename... Fourths, typename... Fifths, typename... Sixths, typename... Rest>
+struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
+              list<Fourths...>, list<Fifths...>, list<Sixths...>, Rest...> {
   using type = typename concat<
-      list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths...>,
+      list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths..., Sixths...>,
       Rest...>::type;
 };
 
