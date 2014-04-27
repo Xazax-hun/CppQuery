@@ -62,6 +62,13 @@ template <typename... Ts, template <typename...> class To>
 struct copy_pack<list<Ts...>, To> {
   using type = To<Ts...>;
 };
+
+template <typename list, template <typename Val> class func> struct map;
+
+template <typename... elems, template <typename Val> class func>
+struct map<list<elems...>, func> {
+  using type = list<func<elems>...>;
+};
 }
 
 #endif
