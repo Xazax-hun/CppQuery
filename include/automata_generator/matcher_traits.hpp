@@ -67,7 +67,6 @@ template<typename Result, typename Arg, Result (*Func)(llvm::ArrayRef<const Arg 
 struct var_func_container {
   typedef Result result;
   typedef Arg arg;
-  Result (*f)(llvm::ArrayRef<const Arg *>) = Func;
 };
 
 template <typename Result, typename Arg,
