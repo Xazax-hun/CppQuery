@@ -49,6 +49,7 @@ typedef typename Automata<
     MATCHER(unaryTransformType), MATCHER(variableArrayType),
 
     // Narrowing matchers
+    // allOf, anyOf, anything, unless
     MATCHER(hasOperatorName), MATCHER(argumentCountIs), MATCHER(isImplicit),
     MATCHER(isWritten), MATCHER(hasOverloadedOperatorName), MATCHER(isConst),
     MATCHER(isOverride), MATCHER(isVirtual),
@@ -72,10 +73,32 @@ typedef typename Automata<
     MATCHER(hasArgument), MATCHER(hasDeclaration),
     MATCHER(forEachConstructorInitializer),
     MATCHER(hasAnyConstructorInitializer), MATCHER(forField),
-    MATCHER(withInitializer),
-    MATCHER(onImplicitObjectArgument), MATCHER(on), /*MATCHER(thisPointerType),*/
+    MATCHER(withInitializer), MATCHER(onImplicitObjectArgument),
+    MATCHER(on),                          /*MATCHER(thisPointerType),*/
     MATCHER(ofClass), MATCHER(hasMethod), /*MATCHER(callee),*/
-    MATCHER(hasCaseConstant)>::result GeneratedAutomata;
+    MATCHER(hasCaseConstant), MATCHER(hasSourceExpression),
+    MATCHER(hasAnyTemplateArgument), MATCHER(hasTemplateArgument),
+    MATCHER(hasAnySubstatement), MATCHER(hasCondition),
+    MATCHER(hasFalseExpression), MATCHER(hasTrueExpression),
+    MATCHER(throughUsingDecl), MATCHER(to), MATCHER(containsDeclaration),
+    MATCHER(hasSingleDecl), MATCHER(hasTypeLoc), MATCHER(hasDeclContext),
+    MATCHER(hasBody), MATCHER(hasQualifier), MATCHER(namesType),
+    MATCHER(hasDestinationType),
+    /*MATCHER(hasType),*/ MATCHER(ignoringImpCasts),
+    MATCHER(ignoringParenCasts), MATCHER(ignoringParenImpCasts),
+    MATCHER(hasIncrement), MATCHER(hasLoopInit), MATCHER(hasAnyParameter),
+    MATCHER(hasParameter), MATCHER(returns),
+    MATCHER(hasConditionVariableStatement), MATCHER(hasImplicitDestinationType),
+    MATCHER(hasObjectExpression), MATCHER(member),
+    /*MATCHER(hasPrefix),*/ MATCHER(specifiesTypeLoc),
+    MATCHER(specifiesNamespace), MATCHER(specifiesType), MATCHER(innerType),
+    MATCHER(hasCanonicalType), /*MATCHER(pointsTo),*/ /*MATCHER(references),*/
+    MATCHER(alignOfExpr), MATCHER(sizeOfExpr), MATCHER(forEachSwitchCase),
+    MATCHER(refersToDeclaration), MATCHER(refersToType), /*MATCHER(findAll),*/
+    MATCHER(hasArgumentOfType), MATCHER(hasUnaryOperand),
+    MATCHER(hasAnyUsingShadowDecl), MATCHER(hasTargetDecl),
+    MATCHER(hasSizeExpr), /*MATCHER(loc),*/
+    MATCHER(hasInitializer)>::result GeneratedAutomata;
 }
 
 using namespace CppQuery;
