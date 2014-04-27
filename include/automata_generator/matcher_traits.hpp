@@ -63,7 +63,8 @@ struct matcher_trait_helper<
       ArgumentAdapter, T, U> object_type;
 };
 
-template<typename Result, typename Arg, Result (*Func)(llvm::ArrayRef<const Arg *>)> 
+template <typename Result, typename Arg,
+          Result (*Func)(llvm::ArrayRef<const Arg *>)>
 struct var_func_container {
   typedef Result result;
   typedef Arg arg;
@@ -76,12 +77,25 @@ getLLVMVarFunc(llvm::VariadicFunction<Result, Arg, Func> *) {}
 
 template <typename T> struct matcher_trait_helper<const T, std::false_type> {
 
-  typedef typename decltype(getLLVMVarFunc((T*)0))::result result;
-  typedef typename decltype(getLLVMVarFunc((T*)0))::arg arg;
+  typedef typename decltype(getLLVMVarFunc((T *)0))::result result;
+  typedef typename decltype(getLLVMVarFunc((T *)0))::arg arg;
 
   typedef result type(arg);
 
   typedef T object_type;
+};
+
+template <>
+struct matcher_trait_helper<
+    const clang::ast_matchers::internal::VariadicOperatorMatcherFunc,
+    std::false_type> {
+  typedef clang::ast_matchers::internal::PolymorphicMatcherWithParam0<
+      clang::ast_matchers::internal::TrueMatcher> Anything;
+  typedef clang::ast_matchers::internal::DynTypedMatcher Argument;
+  typedef Anything type(Argument, Argument);
+
+  typedef const clang::ast_matchers::internal::VariadicOperatorMatcherFunc
+  object_type;
 };
 
 template <typename T>

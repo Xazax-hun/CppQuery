@@ -49,10 +49,13 @@ typedef typename Automata<
     MATCHER(unaryTransformType), MATCHER(variableArrayType),
 
     // Narrowing matchers
-    // allOf, anyOf, anything, unless
-    MATCHER(hasOperatorName), MATCHER(argumentCountIs), MATCHER(isImplicit),
-    MATCHER(isWritten), MATCHER(hasOverloadedOperatorName), MATCHER(isConst),
-    MATCHER(isOverride), MATCHER(isVirtual),
+    MATCHER(allOf), MATCHER(anyOf),
+    MATCHER(anything), /*MATCHER(unless), Templated function on argument
+                          (replace template parameter with dyntypedmatcher?)*/
+    MATCHER(hasOperatorName),
+    MATCHER(argumentCountIs), MATCHER(isImplicit), MATCHER(isWritten),
+    MATCHER(hasOverloadedOperatorName), MATCHER(isConst), MATCHER(isOverride),
+    MATCHER(isVirtual),
     /*MATCHER(isDerivedFrom),*/ MATCHER(isExplicitTemplateSpecialization),
     /*MATCHER(isSameOrDerivedFrom),*/ MATCHER(isTemplateInstantiation),
     MATCHER(statementCountIs), MATCHER(hasSize), MATCHER(declCountIs),
