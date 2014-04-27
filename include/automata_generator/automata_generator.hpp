@@ -18,12 +18,6 @@ struct DefaultGetInstancePolicy {
 
 template <template <typename First, typename Second> class Func,
           typename Binding>
-struct BindFirst {
-  template <typename SecondArg> using type = Func<Binding, SecondArg>;
-};
-
-template <template <typename First, typename Second> class Func,
-          typename Binding>
 struct BindSecond {
   template <typename FirstArg> using type = Func<FirstArg, Binding>;
 };
@@ -34,7 +28,7 @@ template <typename Type, typename... Others>
 struct ComposeOneTypeWithAll<Type, variadic::list<Others...> > {
   using type = typename variadic::map<
       variadic::list<Others...>,
-      BindFirst<ComposabilityRule, Type>::template type>::type;
+      BindSecond<ComposabilityRule, Type>::template type>::type;
 };
 
 template <typename... Elements> struct ComposeAllWithAll {
