@@ -6,7 +6,6 @@
 
 #include <boost/mpl/vector.hpp>
 
-#include <boost/function_types/function_type.hpp>
 #include <boost/function_types/result_type.hpp>
 #include <boost/function_types/parameter_types.hpp>
 
@@ -32,9 +31,9 @@ template <typename T, typename U>
 struct matcher_trait_helper<
     const clang::ast_matchers::internal::VariadicDynCastAllOfMatcher<T, U>,
     std::false_type> {
-  typedef typename boost::function_types::function_type<boost::mpl::vector<
-      clang::ast_matchers::internal::Matcher<T>,
-      clang::ast_matchers::internal::Matcher<U> > >::type type;
+  typedef clang::ast_matchers::internal::Matcher<T>
+  type(clang::ast_matchers::internal::Matcher<U>);
+
   typedef const clang::ast_matchers::internal::VariadicDynCastAllOfMatcher<T, U>
   object_type;
 };
@@ -43,9 +42,9 @@ template <typename T>
 struct matcher_trait_helper<
     const clang::ast_matchers::internal::VariadicAllOfMatcher<T>,
     std::false_type> {
-  typedef typename boost::function_types::function_type<boost::mpl::vector<
-      clang::ast_matchers::internal::Matcher<T>,
-      clang::ast_matchers::internal::Matcher<T> > >::type type;
+  typedef clang::ast_matchers::internal::Matcher<T>
+  type(clang::ast_matchers::internal::Matcher<T>);
+
   typedef const clang::ast_matchers::internal::VariadicAllOfMatcher<T>
   object_type;
 };
@@ -56,9 +55,10 @@ struct matcher_trait_helper<
     const clang::ast_matchers::internal::ArgumentAdaptingMatcherFunc<
         ArgumentAdapter, T, U>,
     std::false_type> {
-  typedef typename boost::function_types::function_type<boost::mpl::vector<
-      clang::ast_matchers::internal::Matcher<T>,
-      clang::ast_matchers::internal::Matcher<U> > >::type type;
+
+  typedef clang::ast_matchers::internal::Matcher<T>
+  type(clang::ast_matchers::internal::Matcher<U>);
+
   typedef const clang::ast_matchers::internal::ArgumentAdaptingMatcherFunc<
       ArgumentAdapter, T, U> object_type;
 };
@@ -79,8 +79,7 @@ template <typename T> struct matcher_trait_helper<const T, std::false_type> {
   typedef typename decltype(getLLVMVarFunc((T*)0))::result result;
   typedef typename decltype(getLLVMVarFunc((T*)0))::arg arg;
 
-  typedef typename boost::function_types::function_type<
-      boost::mpl::vector<result, arg> >::type type;
+  typedef result type(arg);
 
   typedef T object_type;
 };
