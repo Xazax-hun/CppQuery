@@ -47,6 +47,8 @@ template <typename F, typename FOType, typename FName, typename G,
           typename GOType, typename GName>
 struct ComposabilityRule<std::tuple<F, FOType, FName>,
                          std::tuple<G, GOType, GName> > {
+  typedef ComposabilityRule<std::tuple<F, FOType, FName>,
+                            std::tuple<G, GOType, GName> > type;
   typedef F Function;
   typedef FName FunctionName;
   typedef FOType ObjectType;
