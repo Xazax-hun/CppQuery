@@ -14,23 +14,46 @@ struct push_back<list<Ts...>, elements...> {
   using type = list<Ts..., elements...>;
 };
 
-template <typename first, typename second> struct append;
+template <typename... lists> struct concat;
+
+template <> struct concat<> {
+  using type = list<>;
+};
+
+template <typename... Firsts> struct concat<list<Firsts...> > {
+  using type = list<Firsts...>;
+};
 
 template <typename... Firsts, typename... Seconds>
-struct append<list<Firsts...>, list<Seconds...> > {
+struct concat<list<Firsts...>, list<Seconds...> > {
   using type = list<Firsts..., Seconds...>;
 };
 
-template <typename... Vs> struct concat;
-
-template <typename Head, typename Second, typename... Tail>
-struct concat<Head, Second, Tail...> {
-  using type =
-      typename concat<typename append<Head, Second>::type, Tail...>::type;
+template <typename... Firsts, typename... Seconds, typename... Thirds>
+struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...> > {
+  using type = list<Firsts..., Seconds..., Thirds...>;
 };
 
-template <typename Head, typename Second> struct concat<Head, Second> {
-  using type = typename append<Head, Second>::type;
+template <typename... Firsts, typename... Seconds, typename... Thirds,
+          typename... Fourths>
+struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
+              list<Fourths...> > {
+  using type = list<Firsts..., Seconds..., Thirds..., Fourths...>;
+};
+
+template <typename... Firsts, typename... Seconds, typename... Thirds,
+          typename... Fourths, typename... Fifths>
+struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
+              list<Fourths...>, list<Fifths...> > {
+  using type = list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths...>;
+};
+
+template <typename... Firsts, typename... Seconds, typename... Thirds,
+          typename... Fourths, typename... Fifths, typename... Rest>
+struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
+              list<Fourths...>, list<Fifths...>, Rest...> {
+  using type = concat<
+      list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths...>, Rest...>;
 };
 
 template <typename From, template <typename... Ts> class To> struct copy_pack;

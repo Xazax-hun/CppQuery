@@ -59,7 +59,7 @@ template <typename Pair, typename... Pairs> struct AutomataImpl {
 
   // merge the results for 'Pair' with the results of the elements of 'Pairs'
   // (recurse)
-  typedef typename variadic::append<typename AutomataImpl<Pairs...>::result,
+  typedef typename variadic::concat<typename AutomataImpl<Pairs...>::result,
                                     partial>::type result;
 };
 
