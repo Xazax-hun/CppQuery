@@ -52,8 +52,15 @@ template <typename... Firsts, typename... Seconds, typename... Thirds,
           typename... Fourths, typename... Fifths, typename... Rest>
 struct concat<list<Firsts...>, list<Seconds...>, list<Thirds...>,
               list<Fourths...>, list<Fifths...>, Rest...> {
-  using type = concat<
-      list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths...>, Rest...>;
+  using type = typename concat<
+      list<Firsts..., Seconds..., Thirds..., Fourths..., Fifths...>,
+      Rest...>::type;
+};
+
+template <typename list> struct concat_list;
+
+template <typename... elements> struct concat_list<list<elements...> > {
+  using type = typename concat<elements...>::type;
 };
 
 template <typename From, template <typename... Ts> class To> struct copy_pack;
@@ -67,7 +74,7 @@ template <typename list, template <typename Val> class func> struct map;
 
 template <typename... elems, template <typename Val> class func>
 struct map<list<elems...>, func> {
-  using type = list<func<elems>...>;
+  using type = list<typename func<elems>::type...>;
 };
 }
 
