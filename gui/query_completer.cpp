@@ -6,7 +6,7 @@
 namespace {
 using namespace clang::ast_matchers;
 typedef typename Automata<
-	// Node Matchers
+    // Node Matchers
     MATCHER(ctorInitializer), MATCHER(accessSpecDecl),
     MATCHER(classTemplateDecl), MATCHER(classTemplateSpecializationDecl),
     MATCHER(constructorDecl), MATCHER(decl), MATCHER(declaratorDecl),
@@ -46,15 +46,36 @@ typedef typename Automata<
     MATCHER(memberPointerType), MATCHER(parenType), MATCHER(pointerType),
     MATCHER(rValueReferenceType), MATCHER(recordType), MATCHER(referenceType),
     MATCHER(templateSpecializationType), MATCHER(type), MATCHER(typedefType),
-    MATCHER(unaryTransformType),
-    MATCHER(variableArrayType),
+    MATCHER(unaryTransformType), MATCHER(variableArrayType),
 
     // Narrowing matchers
-    MATCHER(hasOperatorName), MATCHER(argumentCountIs),
-    MATCHER(isImplicit), MATCHER(isWritten),
-    MATCHER(hasOverloadedOperatorName), MATCHER(isConst), MATCHER(isOverride),
-    MATCHER(isVirtual)
-    >::result GeneratedAutomata;
+    MATCHER(hasOperatorName), MATCHER(argumentCountIs), MATCHER(isImplicit),
+    MATCHER(isWritten), MATCHER(hasOverloadedOperatorName), MATCHER(isConst),
+    MATCHER(isOverride), MATCHER(isVirtual),
+    /*MATCHER(isDerivedFrom),*/ MATCHER(isExplicitTemplateSpecialization),
+    /*MATCHER(isSameOrDerivedFrom),*/ MATCHER(isTemplateInstantiation),
+    MATCHER(statementCountIs), MATCHER(hasSize), MATCHER(declCountIs),
+    MATCHER(equalsBoundNode), /* MATCHER(equalsNode),*/ MATCHER(isPrivate),
+    MATCHER(isProtected), MATCHER(isPublic), MATCHER(isDefinition),
+    MATCHER(isExternC), MATCHER(matchesName), MATCHER(asString),
+    MATCHER(hasLocalQualifiers), MATCHER(isConstQualified), MATCHER(isInteger),
+    MATCHER(ofKind), MATCHER(templateSpecializationType), MATCHER(type),
+    MATCHER(typedefType), MATCHER(unaryTransformType),
+    MATCHER(variableArrayType),
+
+    // Traversal matchers
+    MATCHER(forEachDescendant), MATCHER(forEach), MATCHER(hasAncestor),
+    MATCHER(hasDescendant), MATCHER(has), MATCHER(hasParent), MATCHER(hasBase),
+    MATCHER(hasIndex), MATCHER(hasElementType), MATCHER(hasValueType),
+    MATCHER(hasDeducedType), MATCHER(hasEitherOperand), MATCHER(hasLHS),
+    MATCHER(hasRHS), MATCHER(pointee), MATCHER(hasAnyArgument),
+    MATCHER(hasArgument), MATCHER(hasDeclaration),
+    MATCHER(forEachConstructorInitializer),
+    MATCHER(hasAnyConstructorInitializer), MATCHER(forField),
+    MATCHER(withInitializer),
+    MATCHER(onImplicitObjectArgument), MATCHER(on), /*MATCHER(thisPointerType),*/
+    MATCHER(ofClass), MATCHER(hasMethod), /*MATCHER(callee),*/
+    MATCHER(hasCaseConstant)>::result GeneratedAutomata;
 }
 
 using namespace CppQuery;
