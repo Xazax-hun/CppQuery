@@ -31,11 +31,10 @@ void QueryCatalogWindow::readFromFile(const std::string &file) {
 
 QueryCatalogWindow::~QueryCatalogWindow() { delete queryTable->model(); }
 
-
-void QueryCatalogWindow::addQuery(const std::string& query) {
-	QAbstractItemModel* model = queryTable->model();
-	model->insertRows(model->rowCount(), 1);
-	QModelIndex index = model->index(model->rowCount() - 1, 2);
-	model->setData(index, QString::fromStdString(query));
-	queryTable->setModel(model);
+void QueryCatalogWindow::addQuery(const std::string &query) {
+  QAbstractItemModel *model = queryTable->model();
+  model->insertRows(model->rowCount(), 1);
+  QModelIndex index = model->index(model->rowCount() - 1, 2);
+  model->setData(index, QString::fromStdString(query));
+  queryTable->setModel(model);
 }

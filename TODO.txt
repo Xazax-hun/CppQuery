@@ -2,7 +2,6 @@ List of tasks to accomplish:
 	* Drag and drop compilation databases.
 	* Open search results in text editor.
 	* Load search results from text files.
-	* Filter search results based on path prefix.
 	* Multithreaded parsing.
 	* Context dependent autocompletition in Query language.
 	* Do not execute queries with semantic errors, underline the wrong parts.
