@@ -46,10 +46,11 @@ struct GetInstancePolicy {
 TEST(SimpleFunctionInterface, First) {
   typedef typename Automata<FUNCTION(func1), FUNCTION(func2),
                             FUNCTION(func3)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
 
   std::set<std::string> expected{ "func1", "func2" };
 
-  auto tmp = GeneratedAutomata::GetComposables("func1");
+  auto tmp = automata.GetComposables("func1");
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 
@@ -60,9 +61,11 @@ TEST(SimpleFunctionInterfaceWithFunctors, First) {
   typedef typename Automata<FUNCTION(func1), FUNCTION(func2), FUNCTION(func3),
                             FUNCTOR(D)>::result GeneratedAutomata;
 
+  GeneratedAutomata automata;
+
   std::set<std::string> expected{ "func1", "func2", "D" };
 
-  auto tmp = GeneratedAutomata::GetComposables("func1");
+  auto tmp = automata.GetComposables("func1");
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 
@@ -79,10 +82,11 @@ TEST(OptimizedMetaString, First) {
 TEST(SimpleFunctionInterfaceWithMultipleParams, First) {
   typedef typename Automata<FUNCTION(func1), FUNCTION(func2), FUNCTION(func3),
                             FUNCTOR(D)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
 
   std::set<std::string> expected{};
 
-  auto tmp = GeneratedAutomata::GetComposables("func1", 1);
+  auto tmp = automata.GetComposables("func1", 1);
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 
@@ -93,10 +97,11 @@ TEST(SimpleFunctionInterfaceWithMultipleParams, First) {
 TEST(SimpleFunctionInterfaceWithMultipleParams, Second) {
   typedef typename Automata<FUNCTION(func1), FUNCTION(func2), FUNCTION(func3),
                             FUNCTOR(D)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
 
   std::set<std::string> expected{ "func2", "D" };
 
-  auto tmp = GeneratedAutomata::GetComposables("func2", 1);
+  auto tmp = automata.GetComposables("func2", 1);
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 
@@ -112,11 +117,14 @@ TEST(SimpleFunctionInterfaceWithMultipleParams, Second) {
       FUNCTOR(D)
     >::result GeneratedAutomata;
 
-  auto func2 = GeneratedAutomata::GetInstance("func2");
+  GeneratedAutomata automata;
+
+  auto func2 = automata.GetInstance("func2");
 
   EXPECT_EQ(0, func2(func2(0)));
 }*/
 
+/*
 TEST(SimpleFunctorInterfaceWithInstantiation, First) {
   typedef typename AutomataWithGetInst<GetInstancePolicy, FUNCTOR(F),
                                        FUNCTOR(G)>::result GeneratedAutomata;
@@ -127,6 +135,7 @@ TEST(SimpleFunctorInterfaceWithInstantiation, First) {
 
   delete tmp;
 }
+*/
 
 // Matcher related tests
 using namespace clang::ast_matchers;
@@ -135,9 +144,9 @@ TEST(SimpleMatcherInterfaceTest, First) {
   typedef typename Automata<MATCHER(methodDecl), MATCHER(hasName),
                             MATCHER(namedDecl),
                             MATCHER(qualType)>::result GeneratedAutomata;
-
+  GeneratedAutomata automata;
   std::set<std::string> expected{ "hasName", "namedDecl", "methodDecl" };
-  auto tmp = GeneratedAutomata::GetComposables("namedDecl");
+  auto tmp = automata.GetComposables("namedDecl");
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 

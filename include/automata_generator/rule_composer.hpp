@@ -3,101 +3,95 @@
 
 #include <vector>
 #include <string>
+#include <utility>
 
 #include <cassert>
 
 #include "rule_generator.hpp"
 
+struct RuntimeRule {
+  std::string Fname;
+  std::string Gname;
+  ComposeResult composability;
+};
+
+template <typename T, unsigned Param> struct RuntimeRuleFactory;
+
+template <typename F, typename FOType, typename FName, typename G,
+          typename GOType, typename GName, unsigned Param>
+struct RuntimeRuleFactory<ComposabilityRule<std::tuple<F, FOType, FName>,
+                                            std::tuple<G, GOType, GName> >,
+                          Param> {
+  static RuntimeRule GetRuntimeRule() {
+    return { FName::GetRuntimeString(), GName::GetRuntimeString(),
+             (ComposabilityHelper<F, G, Param>::value
+                  ? ComposeResult::Composable
+                  : ComposeResult::NotComposable) };
+  }
+};
+
 // Given a list of compile time composability rules, provides an interface
 //  to access the composability information during runtime about
 //  functions represented by their names.
-template <class GetInstancePolicy, typename IsComposable,
-          typename... IsComposables>
+template <class GetInstancePolicy, typename... IsComposable>
 struct ComposedRules {
+  ComposedRules() {
+    rules0 = std::vector<RuntimeRule>(
+        { RuntimeRuleFactory<IsComposable, 0>::GetRuntimeRule()... });
+    rules1 = std::vector<RuntimeRule>(
+        { RuntimeRuleFactory<IsComposable, 1>::GetRuntimeRule()... });
+    rules2 = std::vector<RuntimeRule>(
+        { RuntimeRuleFactory<IsComposable, 2>::GetRuntimeRule()... });
+    rules3 = std::vector<RuntimeRule>(
+        { RuntimeRuleFactory<IsComposable, 3>::GetRuntimeRule()... });
+    rules4 = std::vector<RuntimeRule>(
+        { RuntimeRuleFactory<IsComposable, 4>::GetRuntimeRule()... });
+  }
   // Checks whether the functions represented by their names are composable.
-  static bool CanCompose(const std::string &f, const std::string &g,
-                         int parameter = 0) {
-    switch (IsComposable::TryCompose(f, g, parameter)) {
-    case RuleNotApplicable:
-      return ComposedRules<GetInstancePolicy, IsComposables...>::CanCompose(
-          f, g, parameter);
-
-    case Composable:
-      return true;
-
-    case NotComposable:
-      return false;
+  bool CanCompose(const std::string &f, const std::string &g,
+                  int parameter = 0) {
+    for (RuntimeRule r : GetRuleForParam(parameter)) {
+      if (r.Fname == f && r.Gname == g)
+        return r.composability == ComposeResult::Composable;
     }
-
-    assert("Impossible result of TryCompose");
+    assert("Unreachable code");
     return false;
   }
 
   // Returns a vector of function names representing all functions with
   //  whom the function represented by its 'f' name is composable.
-  static std::vector<std::string> GetComposables(const std::string &f,
-                                                 int parameter = 0) {
-    auto v = ComposedRules<GetInstancePolicy, IsComposables...>::GetComposables(
-        f, parameter);
-    auto s = IsComposable::GetInnerFunction(f, parameter);
-
-    if (s.length()) {
-      v.push_back(s);
-    }
-
-    return v;
-  }
-
-  // TODO: move GetInstance to Automata and make it O(n) instead of O(n^2)
-  static typename GetInstancePolicy::ResultType
-  GetInstance(const std::string &f) {
-    if (IsComposable::FunctionName::GetRuntimeString() != f)
-      return ComposedRules<GetInstancePolicy, IsComposables...>::GetInstance(f);
-
-    return GetInstancePolicy::template Create<
-        typename IsComposable::ObjectType>();
-  }
-};
-
-template <typename GetInstancePolicy, typename IsComposable>
-struct ComposedRules<GetInstancePolicy, IsComposable> {
-  static bool CanCompose(const std::string &f, const std::string &g,
-                         int parameter = 0) {
-    switch (IsComposable::TryCompose(f, g, parameter)) {
-    case RuleNotApplicable:
-      return false;
-
-    case Composable:
-      return true;
-
-    case NotComposable:
-      return false;
-    }
-
-    assert("Impossible result of TryCompose");
-    return false;
-  }
-
-  static std::vector<std::string> GetComposables(const std::string &f,
-                                                 int parameter = 0) {
+  std::vector<std::string> GetComposables(const std::string &f,
+                                          int parameter = 0) {
     std::vector<std::string> v;
-    auto s = IsComposable::GetInnerFunction(f, parameter);
-
-    if (s.length()) {
-      v.push_back(s);
+    for (RuntimeRule r : GetRuleForParam(parameter)) {
+      if (r.Fname == f && r.composability == ComposeResult::Composable)
+        v.push_back(r.Gname);
     }
-
     return v;
   }
 
-  static typename GetInstancePolicy::ResultType
-  GetInstance(const std::string &f) {
-    if (IsComposable::FunctionName::GetRuntimeString() != f)
-      assert(false && IsComposable::FunctionName::GetRuntimeString().c_str() &&
-             " can not be instantiated");
+private:
+  // TODO: transform into matrix for prformance
+  std::vector<RuntimeRule> rules0;
+  std::vector<RuntimeRule> rules1;
+  std::vector<RuntimeRule> rules2;
+  std::vector<RuntimeRule> rules3;
+  std::vector<RuntimeRule> rules4;
 
-    return GetInstancePolicy::template Create<
-        typename IsComposable::ObjectType>();
+  std::vector<RuntimeRule> &GetRuleForParam(int parameter) {
+    switch (parameter) {
+    case 0:
+      return rules0;
+    case 1:
+      return rules1;
+    case 2:
+      return rules2;
+    case 3:
+      return rules3;
+    case 4:
+      return rules4;
+    }
+    return rules0;
   }
 };
 

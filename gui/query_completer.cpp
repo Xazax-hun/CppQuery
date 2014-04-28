@@ -1,10 +1,14 @@
 #include "query_completer.h"
 
+#include <QDebug>
+#include <algorithm>
+
 #include "automata_generator/matcher_traits.hpp"
 #include "automata_generator/automata_generator.hpp"
 
 namespace {
 using namespace clang::ast_matchers;
+
 typedef typename Automata<
     // Node Matchers
     MATCHER(ctorInitializer), MATCHER(accessSpecDecl),
@@ -52,10 +56,9 @@ typedef typename Automata<
     MATCHER(allOf), MATCHER(anyOf),
     MATCHER(anything), /*MATCHER(unless), Templated function on argument
                           (replace template parameter with dyntypedmatcher?)*/
-    MATCHER(hasOperatorName),
-    MATCHER(argumentCountIs), MATCHER(isImplicit), MATCHER(isWritten),
-    MATCHER(hasOverloadedOperatorName), MATCHER(isConst), MATCHER(isOverride),
-    MATCHER(isVirtual),
+    MATCHER(hasOperatorName), MATCHER(argumentCountIs), MATCHER(isImplicit),
+    MATCHER(isWritten), MATCHER(hasOverloadedOperatorName), MATCHER(isConst),
+    MATCHER(isOverride), MATCHER(isVirtual),
     /*MATCHER(isDerivedFrom),*/ MATCHER(isExplicitTemplateSpecialization),
     /*MATCHER(isSameOrDerivedFrom),*/ MATCHER(isTemplateInstantiation),
     MATCHER(statementCountIs), MATCHER(hasSize), MATCHER(declCountIs),
@@ -102,6 +105,7 @@ typedef typename Automata<
     MATCHER(hasAnyUsingShadowDecl), MATCHER(hasTargetDecl),
     MATCHER(hasSizeExpr), /*MATCHER(loc),*/
     MATCHER(hasInitializer)>::result GeneratedAutomata;
+//GeneratedAutomata Automata;
 }
 
 using namespace CppQuery;
@@ -109,4 +113,46 @@ using namespace CppQuery;
 QueryCompleter::QueryCompleter(const QStringList &words, QObject *parent)
     : QCompleter(parent), list(words) {}
 
-void QueryCompleter::updateModelFromCtxt(const QString &text) {}
+void QueryCompleter::updateModelFromCtxt(const QString &text) {
+  /*  QString parentToken;
+    int argPosition = 0;
+
+    // Unchanged parentToken and argPosition
+    if (text.right(1) != "(" || text.right(1) != ",")
+      return;
+
+    int parenLevel = 0;
+    for (int i = text.length() - 1; i >= 0; --i) {
+      if (text[i] == ')')
+        --parenLevel;
+      if (text[i] == '(')
+        ++parenLevel;
+      if (text[i] == ',' && parenLevel == 0)
+        ++argPosition;
+      if (parenLevel == 1) {
+        parentToken = text.left(i);
+        int lastComma = parentToken.lastIndexOf(',');
+        int lastParen = parentToken.lastIndexOf('(');
+        int fromPos = std::max(lastComma, lastParen);
+        parentToken = parentToken.right(fromPos);
+        break;
+      }
+    }
+
+    if (parentToken.length() == 0)
+      return;
+
+    qDebug() << parentToken;
+
+    // Update the model
+    std::vector<std::string> possibleCompletions =
+        Automata.GetComposables(parentToken.toStdString(), argPosition);
+
+    list.clear();
+
+    for(auto& completion : possibleCompletions)
+          list.append(QString::fromStdString(completion));
+
+    model.setStringList(list);
+    setModel(&model);*/
+}
