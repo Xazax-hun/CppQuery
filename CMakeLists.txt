@@ -123,6 +123,8 @@ file(GLOB_RECURSE GUI_SOURCES ${PROJECT_SOURCE_DIR}/gui/*.cpp)
 add_executable(CppQuery ${GUI_SOURCES} ${SOURCES})
 target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
 
+set_source_files_properties(gui/query_completer.cpp PROPERTIES COMPILE_FLAGS "-g0 -O3 -s")
+
 # Unit Tests
 if (GTEST_FOUND)
   file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cpp)

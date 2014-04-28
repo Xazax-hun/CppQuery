@@ -1,9 +1,6 @@
 #ifndef __RULE_GENERATOR_HPP__
 #define __RULE_GENERATOR_HPP__
 
-#include <string>
-#include <tuple>
-
 #include <type_traits>
 
 #include <boost/function_types/result_type.hpp>
@@ -11,6 +8,8 @@
 #include <boost/function_types/function_arity.hpp>
 
 #include <boost/mpl/at.hpp>
+
+#include "meta_lib/variadic_list.hpp"
 
 template <typename T, T *ptr> struct FunctionPointer;
 
@@ -20,14 +19,14 @@ struct FunctionPointer<Ret(Args...), f> {
 };
 
 #define FUNCTION(x)                                                            \
-  std::tuple<decltype(x), FunctionPointer<decltype(x), &x>, MetaString<_S(#x)> >
-#define FUNCTOR(x) std::tuple<decltype(&x::operator()), x, MetaString<_S(#x)> >
+  variadic::list<decltype(x), FunctionPointer<decltype(x), &x>,                \
+                 MetaString<_S(#x)> >
+#define FUNCTOR(x)                                                             \
+  variadic::list<decltype(&x::operator()), x, MetaString<_S(#x)> >
 
 enum class ComposeResult {
-  RuleNotApplicable,
   Composable,
-  NotComposable,
-  OutOfArityBounds
+  NotComposable
 };
 
 template <typename F, typename G, int Par> struct ComposabilityHelper {
@@ -45,11 +44,7 @@ template <typename T, typename U> struct ComposabilityRule;
 //  and their names (FName, GName).
 template <typename F, typename FOType, typename FName, typename G,
           typename GOType, typename GName>
-struct ComposabilityRule<std::tuple<F, FOType, FName>,
-                         std::tuple<G, GOType, GName> > {
-  typedef ComposabilityRule<std::tuple<F, FOType, FName>,
-                            std::tuple<G, GOType, GName> > type;
-  static const int arity = boost::function_types::function_arity<F>::value;
-};
+struct ComposabilityRule<variadic::list<F, FOType, FName>,
+                         variadic::list<G, GOType, GName> > {};
 
 #endif

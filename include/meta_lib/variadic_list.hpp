@@ -3,9 +3,7 @@
 
 namespace variadic {
 
-template <typename... Ts> struct list {
-  using type = list;
-};
+template <typename... Ts> struct list {};
 
 template <typename vec, typename... elements> struct push_back;
 
@@ -82,6 +80,13 @@ template <typename list, template <typename Val> class func> struct map;
 template <typename... elems, template <typename Val> class func>
 struct map<list<elems...>, func> {
   using type = list<typename func<elems>::type...>;
+};
+
+template <typename list, template <typename Val> class func> struct lazy_map;
+
+template <typename... elems, template <typename Val> class func>
+struct lazy_map<list<elems...>, func> {
+  using type = list<func<elems>...>;
 };
 }
 

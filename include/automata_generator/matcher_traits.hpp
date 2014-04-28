@@ -12,13 +12,15 @@
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Basic/LLVM.h"
 
+#include "meta_lib/variadic_list.hpp"
+
 // TODO: handle templates: possible solution: replace templated parameters with
 // a type such that any type can be converted to that type.
 
 #define MATCHER(x)                                                             \
-  std::tuple<typename matcher_trait<decltype(x)>::type,                        \
-             typename matcher_trait<decltype(x)>::object_type,                 \
-             MetaString<_S(#x)> >
+  variadic::list<typename matcher_trait<decltype(x)>::type,                    \
+                 typename matcher_trait<decltype(x)>::object_type,             \
+                 MetaString<_S(#x)> >
 
 template <typename T, typename U> struct matcher_trait_helper;
 

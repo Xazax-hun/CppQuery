@@ -7,6 +7,8 @@
 
 #include <cassert>
 
+#include "meta_lib/variadic_list.hpp"
+
 #include "rule_generator.hpp"
 
 struct RuntimeRule {
@@ -19,8 +21,8 @@ template <typename T, unsigned Param> struct RuntimeRuleFactory;
 
 template <typename F, typename FOType, typename FName, typename G,
           typename GOType, typename GName, unsigned Param>
-struct RuntimeRuleFactory<ComposabilityRule<std::tuple<F, FOType, FName>,
-                                            std::tuple<G, GOType, GName> >,
+struct RuntimeRuleFactory<ComposabilityRule<variadic::list<F, FOType, FName>,
+                                            variadic::list<G, GOType, GName> >,
                           Param> {
   static RuntimeRule GetRuntimeRule() {
     return { FName::GetRuntimeString(), GName::GetRuntimeString(),
@@ -40,12 +42,6 @@ struct ComposedRules {
         { RuntimeRuleFactory<IsComposable, 0>::GetRuntimeRule()... });
     rules1 = std::vector<RuntimeRule>(
         { RuntimeRuleFactory<IsComposable, 1>::GetRuntimeRule()... });
-    rules2 = std::vector<RuntimeRule>(
-        { RuntimeRuleFactory<IsComposable, 2>::GetRuntimeRule()... });
-    rules3 = std::vector<RuntimeRule>(
-        { RuntimeRuleFactory<IsComposable, 3>::GetRuntimeRule()... });
-    rules4 = std::vector<RuntimeRule>(
-        { RuntimeRuleFactory<IsComposable, 4>::GetRuntimeRule()... });
   }
   // Checks whether the functions represented by their names are composable.
   bool CanCompose(const std::string &f, const std::string &g,
@@ -74,9 +70,6 @@ private:
   // TODO: transform into matrix for prformance
   std::vector<RuntimeRule> rules0;
   std::vector<RuntimeRule> rules1;
-  std::vector<RuntimeRule> rules2;
-  std::vector<RuntimeRule> rules3;
-  std::vector<RuntimeRule> rules4;
 
   std::vector<RuntimeRule> &GetRuleForParam(int parameter) {
     switch (parameter) {
@@ -84,12 +77,6 @@ private:
       return rules0;
     case 1:
       return rules1;
-    case 2:
-      return rules2;
-    case 3:
-      return rules3;
-    case 4:
-      return rules4;
     }
     return rules0;
   }

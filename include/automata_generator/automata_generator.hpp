@@ -26,7 +26,7 @@ template <typename Type, typename TypeList> struct ComposeOneTypeWithAll;
 
 template <typename Type, typename... Others>
 struct ComposeOneTypeWithAll<Type, variadic::list<Others...> > {
-  using type = typename variadic::map<
+  using type = typename variadic::lazy_map<
       variadic::list<Others...>,
       BindSecond<ComposabilityRule, Type>::template type>::type;
 };
