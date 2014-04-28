@@ -105,7 +105,7 @@ typedef typename Automata<
     MATCHER(hasAnyUsingShadowDecl), MATCHER(hasTargetDecl),
     MATCHER(hasSizeExpr), /*MATCHER(loc),*/
     MATCHER(hasInitializer)>::result GeneratedAutomata;
-//GeneratedAutomata Automata;
+GeneratedAutomata Automaton;
 }
 
 using namespace CppQuery;
@@ -114,7 +114,7 @@ QueryCompleter::QueryCompleter(const QStringList &words, QObject *parent)
     : QCompleter(parent), list(words) {}
 
 void QueryCompleter::updateModelFromCtxt(const QString &text) {
-  /*  QString parentToken;
+    QString parentToken;
     int argPosition = 0;
 
     // Unchanged parentToken and argPosition
@@ -146,7 +146,7 @@ void QueryCompleter::updateModelFromCtxt(const QString &text) {
 
     // Update the model
     std::vector<std::string> possibleCompletions =
-        Automata.GetComposables(parentToken.toStdString(), argPosition);
+        Automaton.GetComposables(parentToken.toStdString(), argPosition);
 
     list.clear();
 
@@ -154,5 +154,5 @@ void QueryCompleter::updateModelFromCtxt(const QString &text) {
           list.append(QString::fromStdString(completion));
 
     model.setStringList(list);
-    setModel(&model);*/
+    setModel(&model);
 }
