@@ -17,14 +17,13 @@ struct RuntimeRule {
   ComposeResult composability;
 };
 
-template <typename T, unsigned Param> struct RuntimeRuleFactory;
+template <typename T> struct RuntimeRuleFactory;
 
 template <typename F, typename FOType, typename FName, typename G,
-          typename GOType, typename GName, unsigned Param>
-struct RuntimeRuleFactory<ComposabilityRule<variadic::list<F, FOType, FName>,
-                                            variadic::list<G, GOType, GName> >,
-                          Param> {
-  static RuntimeRule GetRuntimeRule() {
+          typename GOType, typename GName>
+struct RuntimeRuleFactory<ComposabilityRule<
+    variadic::list<F, FOType, FName>, variadic::list<G, GOType, GName> > > {
+  template <unsigned Param> static RuntimeRule GetRuntimeRule() {
     return { FName::GetRuntimeString(), GName::GetRuntimeString(),
              (ComposabilityHelper<F, G, Param>::value
                   ? ComposeResult::Composable
@@ -38,10 +37,12 @@ struct RuntimeRuleFactory<ComposabilityRule<variadic::list<F, FOType, FName>,
 template <class GetInstancePolicy, typename... IsComposable>
 struct ComposedRules {
   ComposedRules() {
-    rules0 = std::vector<RuntimeRule>(
-        { RuntimeRuleFactory<IsComposable, 0>::GetRuntimeRule()... });
-    rules1 = std::vector<RuntimeRule>(
-        { RuntimeRuleFactory<IsComposable, 1>::GetRuntimeRule()... });
+    rules0 = {
+      RuntimeRuleFactory<IsComposable>::template GetRuntimeRule<0>()...
+    };
+    rules1 = {
+      RuntimeRuleFactory<IsComposable>::template GetRuntimeRule<1>()...
+    };
   }
   // Checks whether the functions represented by their names are composable.
   bool CanCompose(const std::string &f, const std::string &g,
