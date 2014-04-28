@@ -114,45 +114,45 @@ QueryCompleter::QueryCompleter(const QStringList &words, QObject *parent)
     : QCompleter(parent), list(words) {}
 
 void QueryCompleter::updateModelFromCtxt(const QString &text) {
-    QString parentToken;
-    int argPosition = 0;
+  QString parentToken;
+  int argPosition = 0;
 
-    // Unchanged parentToken and argPosition
-    if (text.right(1) != "(" || text.right(1) != ",")
-      return;
+  // Unchanged parentToken and argPosition
+  if (text.right(1) != "(" || text.right(1) != ",")
+    return;
 
-    int parenLevel = 0;
-    for (int i = text.length() - 1; i >= 0; --i) {
-      if (text[i] == ')')
-        --parenLevel;
-      if (text[i] == '(')
-        ++parenLevel;
-      if (text[i] == ',' && parenLevel == 0)
-        ++argPosition;
-      if (parenLevel == 1) {
-        parentToken = text.left(i);
-        int lastComma = parentToken.lastIndexOf(',');
-        int lastParen = parentToken.lastIndexOf('(');
-        int fromPos = std::max(lastComma, lastParen);
-        parentToken = parentToken.right(fromPos);
-        break;
-      }
+  int parenLevel = 0;
+  for (int i = text.length() - 1; i >= 0; --i) {
+    if (text[i] == ')')
+      --parenLevel;
+    if (text[i] == '(')
+      ++parenLevel;
+    if (text[i] == ',' && parenLevel == 0)
+      ++argPosition;
+    if (parenLevel == 1) {
+      parentToken = text.left(i);
+      int lastComma = parentToken.lastIndexOf(',');
+      int lastParen = parentToken.lastIndexOf('(');
+      int fromPos = std::max(lastComma, lastParen);
+      parentToken = parentToken.right(fromPos);
+      break;
     }
+  }
 
-    if (parentToken.length() == 0)
-      return;
+  if (parentToken.length() == 0)
+    return;
 
-    qDebug() << parentToken;
+  qDebug() << parentToken;
 
-    // Update the model
-    std::vector<std::string> possibleCompletions =
-        Automaton.GetComposables(parentToken.toStdString(), argPosition);
+  // Update the model
+  std::vector<std::string> possibleCompletions =
+      Automaton.GetComposables(parentToken.toStdString(), argPosition);
 
-    list.clear();
+  list.clear();
 
-    for(auto& completion : possibleCompletions)
-          list.append(QString::fromStdString(completion));
+  for (auto &completion : possibleCompletions)
+    list.append(QString::fromStdString(completion));
 
-    model.setStringList(list);
-    setModel(&model);
+  model.setStringList(list);
+  setModel(&model);
 }
