@@ -2,10 +2,11 @@
 #define __AUTOCOMPLETER_TEXTEDIT_H__
 
 #include <QTextEdit>
-
-class QCompleter;
+#include <QString>
 
 namespace CppQuery {
+
+class QueryCompleter;
 
 /// \brief Autocompletion of the ASTMatchers queries.
 ///
@@ -17,8 +18,8 @@ class AutoCompleterTextEdit : public QTextEdit {
 public:
   AutoCompleterTextEdit(QWidget *parent = nullptr);
 
-  void setCompleter(QCompleter *c);
-  QCompleter *completer() const;
+  void setCompleter(QueryCompleter *c);
+  QueryCompleter *completer() const;
 
 protected:
   void keyPressEvent(QKeyEvent *e);
@@ -31,7 +32,8 @@ private:
   QString textUnderCursor() const;
 
 private:
-  QCompleter *comp;
+  QueryCompleter *comp;
+  QString completionPrefix;
 };
 }
 

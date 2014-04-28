@@ -1,6 +1,6 @@
 #include "query_completer.h"
 
-#include <QDebug>
+#include <iostream>
 #include <algorithm>
 
 #include "automata_generator/matcher_traits.hpp"
@@ -110,16 +110,19 @@ GeneratedAutomata Automaton;
 
 using namespace CppQuery;
 
-QueryCompleter::QueryCompleter(const QStringList &words, QObject *parent)
-    : QCompleter(parent), list(words) {}
+QueryCompleter::QueryCompleter(QObject *parent) : QCompleter(parent) {
+  allMatchers <<
+#include "matchers.txt"
+      ;
+}
 
-void QueryCompleter::updateModelFromCtxt(const QString &text) {
+void QueryCompleter::updateModelFromCtxt(const QString &text,
+                                         const QString &prefix) {
   QString parentToken;
   int argPosition = 0;
 
-  // Unchanged parentToken and argPosition
-  if (text.right(1) != "(" || text.right(1) != ",")
-    return;
+  std::cout << "model update invoked on " << text.toStdString() << "with"
+            << text.toStdString() << std::endl;
 
   int parenLevel = 0;
   for (int i = text.length() - 1; i >= 0; --i) {
@@ -134,24 +137,31 @@ void QueryCompleter::updateModelFromCtxt(const QString &text) {
       int lastComma = parentToken.lastIndexOf(',');
       int lastParen = parentToken.lastIndexOf('(');
       int fromPos = std::max(lastComma, lastParen);
-      parentToken = parentToken.right(fromPos);
+      parentToken = parentToken.mid(fromPos + 1);
       break;
     }
   }
 
-  if (parentToken.length() == 0)
-    return;
-
-  qDebug() << parentToken;
-
-  // Update the model
-  std::vector<std::string> possibleCompletions =
-      Automaton.GetComposables(parentToken.toStdString(), argPosition);
+  std::cout << parentToken.toStdString() << std::endl;
 
   list.clear();
 
-  for (auto &completion : possibleCompletions)
-    list.append(QString::fromStdString(completion));
+  if (parentToken.length() != 0) {
+    // Update the model
+    std::vector<std::string> possibleCompletions =
+        Automaton.GetComposables(parentToken.toStdString(), argPosition);
+
+    for (auto &completion : possibleCompletions) {
+      QString qcomp = QString::fromStdString(completion);
+      if (qcomp.startsWith(prefix) || prefix.length() == 0)
+        list.append(qcomp);
+    }
+  } else {
+    for (auto &completion : allMatchers) {
+      if (completion.startsWith(prefix))
+        list.append(completion);
+    }
+  }
 
   model.setStringList(list);
   setModel(&model);

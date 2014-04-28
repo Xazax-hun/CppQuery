@@ -7,6 +7,7 @@ namespace CppQuery {
 
 class QueryHighlighter;
 class AutoCompleterTextEdit;
+class QueryCompleter;
 
 /// \brief Holds query related buttons and widgets.
 ///
@@ -32,6 +33,7 @@ private:
   QPushButton *execute;
   QPushButton *save;
   QueryHighlighter *highlighter;
+  QueryCompleter *completer;
 };
 }
 

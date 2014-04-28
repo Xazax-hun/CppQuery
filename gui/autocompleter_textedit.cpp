@@ -1,14 +1,16 @@
 #include "autocompleter_textedit.h"
 
-#include <QCompleter>
 #include <QtWidgets>
+#include <QDebug>
+
+#include "query_completer.h"
 
 using namespace CppQuery;
 
 AutoCompleterTextEdit::AutoCompleterTextEdit(QWidget *parent)
     : QTextEdit(parent), comp(nullptr) {}
 
-void AutoCompleterTextEdit::setCompleter(QCompleter *c) {
+void AutoCompleterTextEdit::setCompleter(QueryCompleter *c) {
   if (comp)
     disconnect(c, nullptr, this, nullptr);
 
@@ -26,14 +28,14 @@ void AutoCompleterTextEdit::setCompleter(QCompleter *c) {
           this, &AutoCompleterTextEdit::insertCompletion);
 }
 
-QCompleter *AutoCompleterTextEdit::completer() const { return comp; }
+QueryCompleter *AutoCompleterTextEdit::completer() const { return comp; }
 
 void AutoCompleterTextEdit::insertCompletion(const QString &completion) {
   if (comp->widget() != this)
     return;
 
   QTextCursor tc = textCursor();
-  int extra = completion.length() - comp->completionPrefix().length();
+  int extra = completion.length() - completionPrefix.length();
   tc.movePosition(QTextCursor::Left);
   tc.movePosition(QTextCursor::EndOfWord);
   tc.insertText(completion.right(extra));
@@ -73,18 +75,27 @@ void AutoCompleterTextEdit::keyPressEvent(QKeyEvent *e) {
 
   QTextEdit::keyPressEvent(e);
 
-  QString completionPrefix = textUnderCursor();
+  completionPrefix = textUnderCursor();
 
-  if (e->text().isEmpty() || completionPrefix.length() < 3 ||
-      e->text().right(1) == "(") {
+  if (e->text().isEmpty() || e->text().right(1) == ")" ||
+      completionPrefix.right(1) == ")") {
     comp->popup()->hide();
     return;
   }
 
-  if (completionPrefix != comp->completionPrefix()) {
-    comp->setCompletionPrefix(completionPrefix);
-    comp->popup()->setCurrentIndex(comp->completionModel()->index(0, 0));
-  }
+  int cr_pos = textCursor().position();
+  QString context = toPlainText().left(cr_pos);
+
+  qDebug() << "The completion prefix:" << completionPrefix;
+
+  if (completionPrefix.contains("(") || completionPrefix.contains(","))
+    completionPrefix = "";
+
+  comp->updateModelFromCtxt(context, completionPrefix);
+
+  qDebug() << "Popup triggered";
+
+  comp->popup()->setCurrentIndex(comp->completionModel()->index(0, 0));
 
   QRect cr = cursorRect();
   cr.setWidth(comp->popup()->sizeHintForColumn(0) +

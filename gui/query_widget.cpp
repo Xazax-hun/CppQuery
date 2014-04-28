@@ -2,6 +2,7 @@
 
 #include "queryhighlighter.h"
 #include "autocompleter_textedit.h"
+#include "query_completer.h"
 
 using namespace CppQuery;
 
@@ -11,7 +12,7 @@ QueryWidget::QueryWidget(QWidget *parent) : QWidget(parent) {
 
   queryText = new AutoCompleterTextEdit;
   execute = new QPushButton(tr("Execute!"));
-  save =  new QPushButton(tr("Save to catalog"));
+  save = new QPushButton(tr("Save to catalog"));
 
   hlayout->addWidget(save);
   hlayout->addWidget(execute);
@@ -24,16 +25,16 @@ QueryWidget::QueryWidget(QWidget *parent) : QWidget(parent) {
 
   connect(execute, &QPushButton::clicked, this,
           &QueryWidget::executeButtonPressed);
-  connect(save, &QPushButton::clicked, this,
-          &QueryWidget::saveButtonPressed);
+  connect(save, &QPushButton::clicked, this, &QueryWidget::saveButtonPressed);
 
   // Autocompletion support
-  QStringList matchers;
-  matchers <<
-#include "matchers.txt"
-      ;
+  //  QStringList matchers;
+  //  matchers <<
+  //#include "matchers.txt"
+  //     ;
 
-  QCompleter *completer = new QCompleter(matchers, this);
+  // QCompleter *completer = new QCompleter(matchers, this);
+  completer = new QueryCompleter(this);
   completer->setCaseSensitivity(Qt::CaseSensitive);
   queryText->setCompleter(completer);
 }
