@@ -1,7 +1,6 @@
 #include "autocompleter_textedit.h"
 
 #include <QtWidgets>
-#include <QDebug>
 
 #include "query_completer.h"
 
@@ -86,14 +85,10 @@ void AutoCompleterTextEdit::keyPressEvent(QKeyEvent *e) {
   int cr_pos = textCursor().position();
   QString context = toPlainText().left(cr_pos);
 
-  qDebug() << "The completion prefix:" << completionPrefix;
-
   if (completionPrefix.contains("(") || completionPrefix.contains(","))
     completionPrefix = "";
 
   comp->updateModelFromCtxt(context, completionPrefix);
-
-  qDebug() << "Popup triggered";
 
   comp->popup()->setCurrentIndex(comp->completionModel()->index(0, 0));
 

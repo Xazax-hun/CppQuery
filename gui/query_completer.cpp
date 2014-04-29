@@ -1,6 +1,5 @@
 #include "query_completer.h"
 
-#include <iostream>
 #include <algorithm>
 
 #include "automata_generator/matcher_traits.hpp"
@@ -121,9 +120,6 @@ void QueryCompleter::updateModelFromCtxt(const QString &text,
   QString parentToken;
   int argPosition = 0;
 
-  std::cout << "model update invoked on " << text.toStdString() << "with"
-            << text.toStdString() << std::endl;
-
   int parenLevel = 0;
   for (int i = text.length() - 1; i >= 0; --i) {
     if (text[i] == ')')
@@ -141,8 +137,6 @@ void QueryCompleter::updateModelFromCtxt(const QString &text,
       break;
     }
   }
-
-  std::cout << parentToken.toStdString() << std::endl;
 
   list.clear();
 
