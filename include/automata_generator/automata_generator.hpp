@@ -1,7 +1,6 @@
 #ifndef __AUTOMATA_GENERATOR__
 #define __AUTOMATA_GENERATOR__
 
-#include "meta_lib/convert_vector.hpp"
 #include "meta_lib/metastring.hpp"
 #include "meta_lib/variadic_list.hpp"
 

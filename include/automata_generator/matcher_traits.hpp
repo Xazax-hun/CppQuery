@@ -4,11 +4,6 @@
 #include <type_traits>
 #include <utility>
 
-#include <boost/mpl/vector.hpp>
-
-#include <boost/function_types/result_type.hpp>
-#include <boost/function_types/parameter_types.hpp>
-
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Basic/LLVM.h"
 
@@ -22,11 +17,70 @@
                  typename matcher_trait<decltype(x)>::object_type,             \
                  MetaString<_S(#x)> >
 
+template <typename T> struct MatcherReturnTypeAdapter : T {};
+
+template <template <typename> class MatcherT, typename ReturnTypesF>
+struct MatcherReturnTypeAdapter<
+    clang::ast_matchers::internal::PolymorphicMatcherWithParam0<
+        MatcherT, ReturnTypesF> > {
+  typedef typename clang::ast_matchers::internal::PolymorphicMatcherWithParam0<
+      MatcherT, ReturnTypesF>::ReturnTypes Types;
+
+  template <typename T,
+            typename std::enable_if<
+                clang::ast_matchers::internal::TypeListContainsSuperOf<
+                    Types, T>::value>::type * = nullptr>
+  operator clang::ast_matchers::internal::Matcher<T>() const {}
+};
+
+template <template <typename, typename> class MatcherT, typename P1,
+          typename ReturnTypesF>
+struct MatcherReturnTypeAdapter<
+    clang::ast_matchers::internal::PolymorphicMatcherWithParam1<
+        MatcherT, P1, ReturnTypesF> > {
+  typedef typename clang::ast_matchers::internal::PolymorphicMatcherWithParam1<
+      MatcherT, P1, ReturnTypesF>::ReturnTypes Types;
+
+  explicit MatcherReturnTypeAdapter(const P1 &Param1) {}
+
+  template <typename T,
+            typename std::enable_if<
+                clang::ast_matchers::internal::TypeListContainsSuperOf<
+                    Types, T>::value>::type * = nullptr>
+  operator clang::ast_matchers::internal::Matcher<T>() const {}
+};
+
+template <template <typename, typename, typename> class MatcherT, typename P1,
+          typename P2, typename ReturnTypesF>
+struct MatcherReturnTypeAdapter<
+    clang::ast_matchers::internal::PolymorphicMatcherWithParam2<
+        MatcherT, P1, P2, ReturnTypesF> > {
+  typedef typename clang::ast_matchers::internal::PolymorphicMatcherWithParam2<
+      MatcherT, P1, P2, ReturnTypesF>::ReturnTypes Types;
+
+  explicit MatcherReturnTypeAdapter(const P1 &Param1, const P2 &Param2) {}
+
+  template <typename T,
+            typename std::enable_if<
+                clang::ast_matchers::internal::TypeListContainsSuperOf<
+                    Types, T>::value>::type * = nullptr>
+  operator clang::ast_matchers::internal::Matcher<T>() const {}
+};
+
+template <typename T> struct ReturnTypeTransformer;
+
+template <typename Ret, typename... Args>
+struct ReturnTypeTransformer<Ret(Args...)> {
+  using type = MatcherReturnTypeAdapter<Ret>(Args...);
+  using return_type = Ret;
+};
+
 template <typename T, typename U> struct matcher_trait_helper;
 
 template <typename T> struct matcher_trait_helper<T, std::true_type> {
-  typedef T type;
-  typedef typename boost::function_types::result_type<T>::type object_type;
+  typedef typename ReturnTypeTransformer<T>::type type;
+
+  typedef typename ReturnTypeTransformer<T>::return_type object_type;
 };
 
 template <typename T, typename U>
