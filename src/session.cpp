@@ -208,12 +208,15 @@ void Session::runQuery(const std::string &query) {
         if (fileName.empty())
           continue;
 
-        m.fileName = fileName.str();
+        m.fileName = getAbsolutePath(fileName);
         m.id = idToNode.first;
         m.startCol = srcMgr.getSpellingColumnNumber(start);
         m.startLine = srcMgr.getSpellingLineNumber(start);
         m.endCol = srcMgr.getSpellingColumnNumber(end);
         m.endLine = srcMgr.getSpellingLineNumber(end);
+
+        if (std::tie(m.startLine, m.startCol) > std::tie(m.endLine, m.endCol))
+          continue;
 
         foundMatches.insert(std::move(m));
       }
