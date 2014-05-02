@@ -1,1 +1,6 @@
-Derived Classes|Finds all class that were derived from a given class|recordDecl(isDerivedFrom(hasName("X"))).bind("id")
+Derived Classes|Finds all class that were derived from a given class|recordDecl(isDerivedFrom(hasName("QSyntaxHighlighter")),isDefinition()).bind("id")
+Get override|Looking for methods with a certain name that is an override|methodDecl(hasName("X"), isOverride()).bind("id")
+Classes with virtual dtors|Classes that contains virtual destructors|recordDecl(has(destructorDecl(isVirtual()))).bind("id")
+Find call|Find all method and function calls with a given name|callExpr(callee(functionDecl(hasName("X")))).bind("id")
+Get function definition|Get definition of a function or method|functionDecl(isDefinition(), hasName("X")).bind("id")
+Get method definition|Get the defimition of a method in a class|methodDecl(isDefinition(), hasName("X"), ofClass(recordDecl(hasName("Y")))).bind("id")
