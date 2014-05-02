@@ -27,30 +27,37 @@ namespace {
 
 class ResourceDirSetter : public ArgumentsAdjuster {
 public:
-  ResourceDirSetter(const std::string& s) : resourceDir(s) {}
+  ResourceDirSetter(const std::string &s) : resourceDir(s) {}
 
   CommandLineArguments Adjust(const CommandLineArguments &args) {
     CommandLineArguments adjustedArgs(args);
-    adjustedArgs.push_back("-resource-dir="+resourceDir);
+    adjustedArgs.push_back("-resource-dir=" + resourceDir);
     return adjustedArgs;
   }
+
 private:
   std::string resourceDir;
 };
 
 class ASTBuilderAction : public ToolAction {
 public:
-  ASTBuilderAction(
-      std::vector<ASTUnit *> &ASTlist,
-      const std::function<bool(const std::string &)> &onTUbegin,
-      const std::function<bool(const std::string &)> &onTUend)
+  ASTBuilderAction(std::vector<ASTUnit *> &ASTlist,
+                   const std::function<bool(const std::string &)> &onTUbegin,
+                   const std::function<bool(const std::string &)> &onTUend)
       : ASTlist(ASTlist), onTUbegin(onTUbegin), onTUend(onTUend) {
     errorNum = 0;
   }
 
   bool runInvocation(CompilerInvocation *invocation, FileManager *files,
                      DiagnosticConsumer *diagConsumer) {
-    if (!onTUbegin(invocation->getFrontendOpts().Inputs[0].getFile().str()))
+    llvm::StringRef file = invocation->getFrontendOpts().Inputs[0].getFile();
+    /*std::string dir;
+    if (file.count('/') == 0 && file.count('\\') == 0) {
+      const FileEntry *f = files->getFile(file);
+      dir = f->getDir()->getName();
+    }*/
+
+    if (!onTUbegin(getAbsolutePath(file)))
       return true;
 
     TextDiagnosticBuffer diag;
