@@ -51,11 +51,6 @@ public:
   bool runInvocation(CompilerInvocation *invocation, FileManager *files,
                      DiagnosticConsumer *diagConsumer) {
     llvm::StringRef file = invocation->getFrontendOpts().Inputs[0].getFile();
-    /*std::string dir;
-    if (file.count('/') == 0 && file.count('\\') == 0) {
-      const FileEntry *f = files->getFile(file);
-      dir = f->getDir()->getName();
-    }*/
 
     if (!onTUbegin(getAbsolutePath(file)))
       return true;
