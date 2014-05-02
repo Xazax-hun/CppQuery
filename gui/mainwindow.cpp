@@ -298,7 +298,8 @@ void MainWindow::openResult(const QModelIndex &index) {
   QFile file{ fileName };
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    assert(false && "Unhandled error");
+    statusBar()->showMessage(tr("Unable to open the location..."));
+    return;
   }
 
   QTextStream reader(&file);
@@ -306,6 +307,7 @@ void MainWindow::openResult(const QModelIndex &index) {
   resultText->setPlainText(reader.readAll());
 
   resultText->highlightArea(startLine, startCol, endLine, endCol);
+  statusBar()->showMessage(tr("Ready"));
 }
 
 ParserWorker::ParserWorker(QWidget *parent)
