@@ -12,10 +12,37 @@
 // TODO: handle templates: possible solution: replace templated parameters with
 // a type such that any type can be converted to that type.
 
+#define GET_MATCHER_OVERLOAD(name, Id)                                         \
+  typename std::remove_reference<                                              \
+      decltype(static_cast< ::clang::ast_matchers::name##_Type##Id>(           \
+          ::clang::ast_matchers::name))>::type
+
 #define MATCHER(x)                                                             \
   variadic::list<typename matcher_trait<decltype(x)>::type,                    \
                  typename matcher_trait<decltype(x)>::object_type,             \
                  MetaString<_S(#x)> >
+
+#define MATCHER2(x)                                                            \
+  variadic::list<                                                              \
+      typename matcher_trait<GET_MATCHER_OVERLOAD(x, 0)>::type,                \
+      typename matcher_trait<GET_MATCHER_OVERLOAD(x, 0)>::object_type,         \
+      MetaString<_S(#x)> >
+
+template <typename To, typename From>
+struct ImplicitlyConvertableMatcherParameter {
+  template <typename T,
+            typename std::enable_if<
+                clang::ast_matchers::internal::TypeListContainsSuperOf<
+                    From, T>::value>::type * = nullptr>
+  ImplicitlyConvertableMatcherParameter(
+      const clang::ast_matchers::internal::Matcher<T> &) {}
+
+  template <typename T,
+            typename std::enable_if<
+                clang::ast_matchers::internal::TypeListContainsSuperOf<
+                    To, T>::value>::type * = nullptr>
+  operator clang::ast_matchers::internal::Matcher<T>() const {}
+};
 
 template <typename T> struct MatcherReturnTypeAdapter : T {};
 
@@ -111,9 +138,9 @@ struct matcher_trait_helper<
     const clang::ast_matchers::internal::ArgumentAdaptingMatcherFunc<
         ArgumentAdapter, T, U>,
     std::false_type> {
+  typedef ImplicitlyConvertableMatcherParameter<T, U> Param;
 
-  typedef clang::ast_matchers::internal::Matcher<T>
-  type(clang::ast_matchers::internal::Matcher<U>);
+  typedef Param type(Param);
 
   typedef const clang::ast_matchers::internal::ArgumentAdaptingMatcherFunc<
       ArgumentAdapter, T, U> object_type;

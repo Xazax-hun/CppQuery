@@ -58,12 +58,12 @@ typedef typename Automata<
     MATCHER(hasOperatorName), MATCHER(argumentCountIs), MATCHER(isImplicit),
     MATCHER(isWritten), MATCHER(hasOverloadedOperatorName), MATCHER(isConst),
     MATCHER(isOverride), MATCHER(isVirtual),
-    /*MATCHER(isDerivedFrom),*/ MATCHER(isExplicitTemplateSpecialization),
-    /*MATCHER(isSameOrDerivedFrom),*/ MATCHER(isTemplateInstantiation),
+    MATCHER2(isDerivedFrom), MATCHER(isExplicitTemplateSpecialization),
+    MATCHER2(isSameOrDerivedFrom), MATCHER(isTemplateInstantiation),
     MATCHER(statementCountIs), MATCHER(hasSize), MATCHER(declCountIs),
     MATCHER(equalsBoundNode), /* MATCHER(equalsNode),*/ MATCHER(isPrivate),
     MATCHER(isProtected), MATCHER(isPublic), MATCHER(isDefinition),
-    MATCHER(isExternC), MATCHER(matchesName), MATCHER(asString),
+    MATCHER(isExternC), MATCHER(hasName), MATCHER(matchesName), MATCHER(asString),
     MATCHER(hasLocalQualifiers), MATCHER(isConstQualified), MATCHER(isInteger),
     MATCHER(ofKind), MATCHER(templateSpecializationType), MATCHER(type),
     MATCHER(typedefType), MATCHER(unaryTransformType),
@@ -79,8 +79,8 @@ typedef typename Automata<
     MATCHER(forEachConstructorInitializer),
     MATCHER(hasAnyConstructorInitializer), MATCHER(forField),
     MATCHER(withInitializer), MATCHER(onImplicitObjectArgument),
-    MATCHER(on),                          /*MATCHER(thisPointerType),*/
-    MATCHER(ofClass), MATCHER(hasMethod), /*MATCHER(callee),*/
+    MATCHER(on),                          MATCHER2(thisPointerType),
+    MATCHER(ofClass), MATCHER(hasMethod), MATCHER2(callee),
     MATCHER(hasCaseConstant), MATCHER(hasSourceExpression),
     MATCHER(hasAnyTemplateArgument), MATCHER(hasTemplateArgument),
     MATCHER(hasAnySubstatement), MATCHER(hasCondition),
@@ -89,20 +89,20 @@ typedef typename Automata<
     MATCHER(hasSingleDecl), MATCHER(hasTypeLoc), MATCHER(hasDeclContext),
     MATCHER(hasBody), MATCHER(hasQualifier), MATCHER(namesType),
     MATCHER(hasDestinationType),
-    /*MATCHER(hasType),*/ MATCHER(ignoringImpCasts),
+    MATCHER2(hasType), MATCHER(ignoringImpCasts),
     MATCHER(ignoringParenCasts), MATCHER(ignoringParenImpCasts),
     MATCHER(hasIncrement), MATCHER(hasLoopInit), MATCHER(hasAnyParameter),
     MATCHER(hasParameter), MATCHER(returns),
     MATCHER(hasConditionVariableStatement), MATCHER(hasImplicitDestinationType),
     MATCHER(hasObjectExpression), MATCHER(member),
-    /*MATCHER(hasPrefix),*/ MATCHER(specifiesTypeLoc),
+    MATCHER2(hasPrefix), MATCHER(specifiesTypeLoc),
     MATCHER(specifiesNamespace), MATCHER(specifiesType), MATCHER(innerType),
-    MATCHER(hasCanonicalType), /*MATCHER(pointsTo),*/ /*MATCHER(references),*/
+    MATCHER(hasCanonicalType), MATCHER2(pointsTo), MATCHER2(references),
     MATCHER(alignOfExpr), MATCHER(sizeOfExpr), MATCHER(forEachSwitchCase),
     MATCHER(refersToDeclaration), MATCHER(refersToType), /*MATCHER(findAll),*/
     MATCHER(hasArgumentOfType), MATCHER(hasUnaryOperand),
     MATCHER(hasAnyUsingShadowDecl), MATCHER(hasTargetDecl),
-    MATCHER(hasSizeExpr), /*MATCHER(loc),*/
+    MATCHER(hasSizeExpr), /*MATCHER2(loc),*/
     MATCHER(hasInitializer)>::result GeneratedAutomata;
 GeneratedAutomata Automaton;
 }
