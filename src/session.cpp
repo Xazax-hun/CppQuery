@@ -41,7 +41,7 @@ private:
 
 class ASTBuilderAction : public ToolAction {
 public:
-  ASTBuilderAction(std::vector<ASTUnit *> &ASTlist,
+  ASTBuilderAction(std::vector<std::pair<ASTUnit *, std::string> > &ASTlist,
                    const std::function<bool(const std::string &)> &onTUbegin,
                    const std::function<bool(const std::string &)> &onTUend)
       : ASTlist(ASTlist), onTUbegin(onTUbegin), onTUend(onTUend) {
@@ -50,9 +50,10 @@ public:
 
   bool runInvocation(CompilerInvocation *invocation, FileManager *files,
                      DiagnosticConsumer *diagConsumer) {
-    llvm::StringRef file = invocation->getFrontendOpts().Inputs[0].getFile();
+    std::string file =
+        getAbsolutePath(invocation->getFrontendOpts().Inputs[0].getFile());
 
-    if (!onTUbegin(getAbsolutePath(file)))
+    if (!onTUbegin(file))
       return true;
 
     TextDiagnosticBuffer diag;
@@ -64,7 +65,7 @@ public:
       return false;
 
     if (onTUend(AST->getMainFileName().str())) {
-      ASTlist.push_back(AST);
+      ASTlist.push_back(std::make_pair(AST, file));
       SourceManager &srcMgr = AST->getSourceManager();
       for (TextDiagnosticBuffer::DiagList::const_iterator it = diag.err_begin();
            it != diag.err_end(); ++it) {
@@ -87,7 +88,7 @@ public:
 private:
   unsigned errorNum;
   std::vector<std::string> errors;
-  std::vector<ASTUnit *> &ASTlist;
+  std::vector<std::pair<ASTUnit *, std::string> > &ASTlist;
   const std::function<bool(const std::string &)> &onTUbegin;
   const std::function<bool(const std::string &)> &onTUend;
 };
@@ -123,9 +124,9 @@ Session::Session(const std::string &databasePath,
 }
 
 Session::~Session() {
-  for (auto AST : ASTlist) {
-    AST->setUnsafeToFree(false);
-    delete AST;
+  for (auto pair : ASTlist) {
+    pair.first->setUnsafeToFree(false);
+    delete pair.first;
   }
   tool->clearArgumentsAdjusters();
 }
@@ -174,8 +175,8 @@ void Session::runQuery(const std::string &query) {
   foundMatches.clear();
   Match m;
 
-  for (auto ast : ASTlist) {
-    SourceManager &srcMgr = ast->getSourceManager();
+  for (auto pair : ASTlist) {
+    SourceManager &srcMgr = pair.first->getSourceManager();
 
     MatchFinder finder;
     std::vector<BoundNodes> boundNodes;
@@ -184,7 +185,7 @@ void Session::runQuery(const std::string &query) {
     if (!finder.addDynamicMatcher(*matcher, &collector))
       throw QueryError("Invalid top level matcher.");
 
-    finder.matchAST(ast->getASTContext());
+    finder.matchAST(pair.first->getASTContext());
 
     for (auto nodes : boundNodes) {
       for (auto idToNode : nodes.getMap()) {
@@ -203,12 +204,10 @@ void Session::runQuery(const std::string &query) {
         SourceLocation end = Lexer::getLocForEndOfToken(range.getEnd(), 1,
                                                         srcMgr, LangOptions());
 
-        llvm::StringRef fileName = srcMgr.getFilename(start);
-
-        if (fileName.empty())
+        if (pair.second.empty())
           continue;
 
-        m.fileName = getAbsolutePath(fileName);
+        m.fileName = pair.second;
         m.id = idToNode.first;
         m.startCol = srcMgr.getSpellingColumnNumber(start);
         m.startLine = srcMgr.getSpellingLineNumber(start);
