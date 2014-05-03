@@ -108,35 +108,6 @@ TEST(SimpleFunctionInterfaceWithMultipleParams, Second) {
   EXPECT_EQ(expected, result);
 }
 
-/*TEST(SimpleInstantiationTest, First)
-{
-  typedef typename Automata<
-      FUNCTION(func1),
-      FUNCTION(func2),
-      FUNCTION(func3),
-      FUNCTOR(D)
-    >::result GeneratedAutomata;
-
-  GeneratedAutomata automata;
-
-  auto func2 = automata.GetInstance("func2");
-
-  EXPECT_EQ(0, func2(func2(0)));
-}*/
-
-/*
-TEST(SimpleFunctorInterfaceWithInstantiation, First) {
-  typedef typename AutomataWithGetInst<GetInstancePolicy, FUNCTOR(F),
-                                       FUNCTOR(G)>::result GeneratedAutomata;
-
-  auto tmp = GeneratedAutomata::GetInstance("G");
-
-  EXPECT_EQ(2, tmp->getTypeID());
-
-  delete tmp;
-}
-*/
-
 // Matcher related tests
 using namespace clang::ast_matchers;
 
@@ -147,6 +118,45 @@ TEST(SimpleMatcherInterfaceTest, First) {
   GeneratedAutomata automata;
   std::set<std::string> expected{ "hasName", "namedDecl", "methodDecl" };
   auto tmp = automata.GetComposables("namedDecl");
+
+  std::set<std::string> result(tmp.begin(), tmp.end());
+
+  EXPECT_EQ(expected, result);
+}
+
+TEST(SimpleMatcherInterfaceTest, Second) {
+  typedef typename Automata<MATCHER(recordDecl), MATCHER(hasName),
+                            MATCHER(ifStmt),
+                            MATCHER(hasCondition)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
+  std::set<std::string> expected{ "recordDecl", "hasName" };
+  auto tmp = automata.GetComposables("recordDecl");
+
+  std::set<std::string> result(tmp.begin(), tmp.end());
+
+  EXPECT_EQ(expected, result);
+}
+
+TEST(SimpleMatcherInterfaceTest, Third) {
+  typedef typename Automata<MATCHER(stmt),
+                            MATCHER(ifStmt),
+                            MATCHER(hasCondition)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
+  std::set<std::string> expected{ "ifStmt", "hasCondition", "stmt" };
+  auto tmp = automata.GetComposables("ifStmt");
+
+  std::set<std::string> result(tmp.begin(), tmp.end());
+
+  EXPECT_EQ(expected, result);
+}
+
+TEST(SimpleMatcherInterfaceTest, Fourth) {
+  typedef typename Automata<MATCHER(stmt),
+                            MATCHER(ifStmt),
+                            MATCHER(hasCondition)>::result GeneratedAutomata;
+  GeneratedAutomata automata;
+  std::set<std::string> expected{ "ifStmt", "stmt" };
+  auto tmp = automata.GetComposables("stmt");
 
   std::set<std::string> result(tmp.begin(), tmp.end());
 
