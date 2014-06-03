@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include <boost/filesystem.hpp>
+
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/Dynamic/Parser.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -207,7 +209,22 @@ void Session::runQuery(const std::string &query) {
         if (pair.second.empty())
           continue;
 
-        m.fileName = pair.second;
+        const FileEntry *file =
+            srcMgr.getFileEntryForID(srcMgr.getFileID(start));
+
+        if (!file)
+          continue;
+
+        boost::filesystem::path filePath{ file->getName() };
+        if (!filePath.is_absolute())
+          filePath =
+              boost::filesystem::path{ file->getDir()->getName() } / filePath;
+
+        boost::filesystem::path mainFilePath{ pair.second };
+
+        m.fileName =
+            canonical(absolute(filePath, mainFilePath.parent_path())).native();
+
         m.id = idToNode.first;
         m.startCol = srcMgr.getSpellingColumnNumber(start);
         m.startLine = srcMgr.getSpellingLineNumber(start);

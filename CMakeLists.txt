@@ -121,7 +121,7 @@ set_directory_properties (PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${PROJECT_BINA
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE GUI_SOURCES ${PROJECT_SOURCE_DIR}/gui/*.cpp)
 add_executable(CppQuery ${GUI_SOURCES} ${SOURCES})
-target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets)
+target_link_libraries(CppQuery ${CLANGLIBS} Qt5::Widgets boost_filesystem boost_system)
 
 set_source_files_properties(gui/query_completer.cpp PROPERTIES COMPILE_FLAGS "-g0 -O0 -fno-exceptions")
 
