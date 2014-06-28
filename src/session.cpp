@@ -18,6 +18,8 @@
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/TextDiagnosticBuffer.h"
 #include "clang/Lex/Lexer.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/ADT/STLExtras.h"
 
 using namespace clang;
 using namespace tooling;
@@ -67,7 +69,9 @@ public:
       return false;
 
     if (onTUend(AST->getMainFileName().str())) {
-      ASTlist.push_back(std::make_pair(AST, file));
+      llvm::SmallString<128> workingDir;
+      llvm::sys::fs::current_path(workingDir);
+      ASTlist.push_back(std::make_pair(AST, workingDir.str().str()));
       SourceManager &srcMgr = AST->getSourceManager();
       for (TextDiagnosticBuffer::DiagList::const_iterator it = diag.err_begin();
            it != diag.err_end(); ++it) {
@@ -216,15 +220,10 @@ void Session::runQuery(const std::string &query) {
           continue;
 
         boost::filesystem::path filePath{ file->getName() };
-        if (!filePath.is_absolute())
-          filePath =
-              boost::filesystem::path{ file->getDir()->getName() } / filePath;
+        boost::filesystem::path workingDir{ pair.second };
 
-        boost::filesystem::path mainFilePath{ pair.second };
-
-        m.fileName =
-            canonical(absolute(filePath, mainFilePath.parent_path())).native();
-
+        // TODO: canonical throws for nonexistent paths, I should handle it.
+        m.fileName = canonical(absolute(filePath, workingDir)).native();
         m.id = idToNode.first;
         m.startCol = srcMgr.getSpellingColumnNumber(start);
         m.startLine = srcMgr.getSpellingLineNumber(start);
