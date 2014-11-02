@@ -45,9 +45,10 @@ private:
 
 class ASTBuilderAction : public ToolAction {
 public:
-  ASTBuilderAction(std::vector<std::pair<ASTUnit *, std::string> > &ASTlist,
-                   const std::function<bool(const std::string &)> &onTUbegin,
-                   const std::function<bool(const std::string &)> &onTUend)
+  ASTBuilderAction(
+      std::vector<std::pair<std::unique_ptr<ASTUnit>, std::string>> &ASTlist,
+      const std::function<bool(const std::string &)> &onTUbegin,
+      const std::function<bool(const std::string &)> &onTUend)
       : ASTlist(ASTlist), onTUbegin(onTUbegin), onTUend(onTUend) {
     errorNum = 0;
   }
@@ -61,7 +62,7 @@ public:
       return true;
 
     TextDiagnosticBuffer diag;
-    ASTUnit *AST = ASTUnit::LoadFromCompilerInvocation(
+    std::unique_ptr<ASTUnit> AST = ASTUnit::LoadFromCompilerInvocation(
         invocation, CompilerInstance::createDiagnostics(
                         &invocation->getDiagnosticOpts(), &diag, false));
 
@@ -71,8 +72,8 @@ public:
     if (onTUend(AST->getMainFileName().str())) {
       llvm::SmallString<128> workingDir;
       llvm::sys::fs::current_path(workingDir);
-      ASTlist.push_back(std::make_pair(AST, workingDir.str().str()));
       SourceManager &srcMgr = AST->getSourceManager();
+      ASTlist.push_back(std::make_pair(std::move(AST), workingDir.str().str()));
       for (TextDiagnosticBuffer::DiagList::const_iterator it = diag.err_begin();
            it != diag.err_end(); ++it) {
         errors.push_back(
@@ -82,7 +83,6 @@ public:
       }
     } else {
       AST->setUnsafeToFree(false);
-      delete AST;
     }
 
     return true;
@@ -94,7 +94,7 @@ public:
 private:
   unsigned errorNum;
   std::vector<std::string> errors;
-  std::vector<std::pair<ASTUnit *, std::string> > &ASTlist;
+  std::vector<std::pair<std::unique_ptr<ASTUnit>, std::string>> &ASTlist;
   const std::function<bool(const std::string &)> &onTUbegin;
   const std::function<bool(const std::string &)> &onTUend;
 };
@@ -130,10 +130,8 @@ Session::Session(const std::string &databasePath,
 }
 
 Session::~Session() {
-  for (auto pair : ASTlist) {
+  for (auto &pair : ASTlist)
     pair.first->setUnsafeToFree(false);
-    delete pair.first;
-  }
   tool->clearArgumentsAdjusters();
 }
 
@@ -181,7 +179,7 @@ void Session::runQuery(const std::string &query) {
   foundMatches.clear();
   Match m;
 
-  for (auto pair : ASTlist) {
+  for (auto &pair : ASTlist) {
     SourceManager &srcMgr = pair.first->getSourceManager();
 
     MatchFinder finder;
@@ -219,8 +217,8 @@ void Session::runQuery(const std::string &query) {
         if (!file)
           continue;
 
-        boost::filesystem::path filePath{ file->getName() };
-        boost::filesystem::path workingDir{ pair.second };
+        boost::filesystem::path filePath{file->getName()};
+        boost::filesystem::path workingDir{pair.second};
 
         // TODO: canonical throws for nonexistent paths, I should handle it.
         m.fileName = canonical(absolute(filePath, workingDir)).native();

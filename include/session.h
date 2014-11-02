@@ -102,7 +102,7 @@ public:
 
 private:
   std::unique_ptr<clang::tooling::JSONCompilationDatabase> compilationDatabase;
-  std::vector<std::pair<clang::ASTUnit *, std::string> > ASTlist;
+  std::vector<std::pair<std::unique_ptr<clang::ASTUnit>, std::string>> ASTlist;
   std::vector<std::string> files;
   std::unique_ptr<clang::tooling::ClangTool> tool;
   std::set<Match> foundMatches;

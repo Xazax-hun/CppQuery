@@ -88,9 +88,9 @@ STRING(REGEX REPLACE "(\r?\n)+$" "" LLVM_LD_FLAGS "${LLVM_LD_FLAGS}")
 
 set (CPPQUERY_LD_FLAGS "${LLVM_LD_FLAGS}")
 
-set (CLANGLIBS clangTooling clangFrontend clangSerialization clangDriver clangRewriteCore clangParse clangSema
+set (CLANGLIBS clangTooling clangFrontend clangSerialization clangDriver clangParse clangSema
            clangEdit clangAnalysis clangAST clangASTMatchers clangLex clangBasic clangDynamicASTMatchers LLVMTransformUtils
-           LLVMCppBackendInfo LLVMMCParser LLVMMC LLVMCore LLVMBitWriter LLVMBitReader LLVMOption LLVMSupport pthread dl)
+           LLVMCppBackendInfo LLVMMCParser LLVMMC LLVMCore LLVMBitWriter LLVMBitReader LLVMOption LLVMSupport pthread dl z curses)
 
 if (ARCH STREQUAL "32")
   set (CPPQUERY_CXX_FLAGS "${CPPQUERY_CXX_FLAGS} -m32")

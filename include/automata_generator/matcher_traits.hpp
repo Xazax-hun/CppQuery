@@ -168,16 +168,16 @@ template <typename T> struct matcher_trait_helper<const T, std::false_type> {
   typedef T object_type;
 };
 
-template <>
+template <unsigned Min, unsigned Max>
 struct matcher_trait_helper<
-    const clang::ast_matchers::internal::VariadicOperatorMatcherFunc,
+    const clang::ast_matchers::internal::VariadicOperatorMatcherFunc<Min, Max>,
     std::false_type> {
   typedef clang::ast_matchers::internal::PolymorphicMatcherWithParam0<
       clang::ast_matchers::internal::TrueMatcher> Anything;
   typedef clang::ast_matchers::internal::DynTypedMatcher Argument;
   typedef Anything type(Argument, Argument);
 
-  typedef const clang::ast_matchers::internal::VariadicOperatorMatcherFunc
+  typedef const clang::ast_matchers::internal::VariadicOperatorMatcherFunc<Min, Max>
   object_type;
 };
 
